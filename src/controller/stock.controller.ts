@@ -5,6 +5,7 @@ import { Operator } from 'src/decorator/operator.decorator';
 import { StockService } from 'src/service/stock.service';
 import { StockFindAllDto, StockBuyDto, StockSoldDto } from 'src/dto/stock/stock.dto';
 import { AuthUser } from 'src/dto/auth/auth.dto';
+import { Stock } from 'src/entity/sequelize/stock.entity';
 
 @UseGuards(AuthGuard())
 @ApiBearerAuth()
@@ -23,13 +24,17 @@ export class StockController {
         return this.stockService.findAll();
     }
 
+    @ApiOperation({ title: '获取单个股票' })
+    @ApiResponse({ status: HttpStatus.OK, type: Stock })
     @Get(':id')
     public async show(
         @Param('id') id: string,
     ) {
-        return this.stockService.findOneById(id);
+        return this.stockService.findOneByIdOrThrow(id);
     }
 
+    @ApiOperation({ title: '买进股票' })
+    @ApiResponse({ status: HttpStatus.OK })
     @Post(':id/buy')
     public async buy(
         @Param('id') id: string,
@@ -37,9 +42,12 @@ export class StockController {
         @Operator() operator: AuthUser,
     ) {
         this.stockService.validInTradeTime();
-        return this.stockService.buy(id, body.price, body.hand, operator.id);
+        await this.stockService.buy(id, body.price, body.hand, operator.id);
+        return true;
     }
 
+    @ApiOperation({ title: '卖出股票' })
+    @ApiResponse({ status: HttpStatus.OK })
     @Post(':id/sold')
     public async sold(
         @Param('id') id: string,
@@ -47,7 +55,8 @@ export class StockController {
         @Operator() operator: AuthUser,
     ) {
         this.stockService.validInTradeTime();
-        return this.stockService.sold(id, body.price, body.hand, operator.id);
+        await this.stockService.sold(id, body.price, body.hand, operator.id);
+        return true;
     }
 
 }

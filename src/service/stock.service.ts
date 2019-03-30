@@ -34,6 +34,15 @@ export class StockService extends BaseService {
         return this.stockDao.findOne({ where: { id }, transaction });
     }
 
+    public async findOneByIdOrThrow(
+        id: string,
+        transaction?: Transaction,
+    ) {
+        const stock = await this.findOneById(id, transaction);
+        if (!stock) throw new NotFoundException();
+        return stock;
+    }
+
     public async findAll(
         transaction?: Transaction,
     ): Promise<StockFindAllDto[]> {

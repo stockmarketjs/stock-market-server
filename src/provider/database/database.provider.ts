@@ -7,6 +7,7 @@ import { StockHistory } from 'src/entity/sequelize/stock_history.entity';
 import { StockOrder } from 'src/entity/sequelize/stock_order.entity';
 import { UserCapital } from 'src/entity/sequelize/user_capital.entity';
 import { UserStock } from 'src/entity/sequelize/user_stock.entity';
+import { UserStockOrder } from 'src/entity/sequelize/user_stock_order.entity';
 
 export const databaseProviders = [
     {
@@ -22,7 +23,7 @@ export const databaseProviders = [
             });
             sequelize.addModels([
                 User, Stock, StockCapital, StockHistory, StockOrder,
-                UserCapital, UserStock,
+                UserCapital, UserStock, UserStockOrder,
             ]);
             await sequelize.sync();
             return sequelize;

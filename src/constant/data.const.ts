@@ -12,6 +12,17 @@ export namespace ConstData {
         SOLD = 1,
     }
 
+    export enum ORDER_STATE {
+        // 待撮合
+        READY = 0,
+        // 撮合中
+        TRADEING = 1,
+        // 交易成功
+        SUCCESS = 2,
+        // 撮合失败
+        FAIL = 3
+    }
+
     /**
      * 交易委托方式
      *

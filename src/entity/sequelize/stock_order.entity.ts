@@ -27,16 +27,16 @@ export class StockOrder extends Model<StockOrder> {
     })
     minute: string;
 
-    @ApiModelProperty({ description: '具体成交时间' })
-    @Column({
-        type: DataType.STRING(30),
-    })
-    time: string;
-
     @ApiModelProperty({ description: '成交价' })
     @Column({
         type: DataType.DECIMAL(20, 2),
     })
     price: number;
+
+    @ApiModelProperty({ description: '成交数' })
+    @Column({
+        type: DataType.BIGINT,
+    })
+    hand: number;
 
 }
