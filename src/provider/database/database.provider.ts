@@ -3,6 +3,10 @@ import { User } from 'src/entity/sequelize/user.entity';
 import { ConstProvider } from 'src/constant/provider.const';
 import { Stock } from 'src/entity/sequelize/stock.entity';
 import { StockCapital } from 'src/entity/sequelize/stock_capital.entity';
+import { StockHistory } from 'src/entity/sequelize/stock_history.entity';
+import { StockOrder } from 'src/entity/sequelize/stock_order.entity';
+import { UserCapital } from 'src/entity/sequelize/user_capital.entity';
+import { UserStock } from 'src/entity/sequelize/user_stock.entity';
 
 export const databaseProviders = [
     {
@@ -16,7 +20,10 @@ export const databaseProviders = [
                 password: '19931124',
                 database: 'test',
             });
-            sequelize.addModels([User, Stock, StockCapital]);
+            sequelize.addModels([
+                User, Stock, StockCapital, StockHistory, StockOrder,
+                UserCapital, UserStock,
+            ]);
             await sequelize.sync();
             return sequelize;
         },
