@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { ConstProvider } from 'src/constant/provider.const';
 import { Sequelize, Model } from 'sequelize-typescript';
-import { FindOptions } from 'sequelize';
+import { FindOptions, UpdateOptions } from 'sequelize';
 
 @Injectable()
 export class BaseDao<T extends Model<T>> {
@@ -14,6 +14,15 @@ export class BaseDao<T extends Model<T>> {
 
     public async findOne(option: FindOptions) {
         return this.sequelize.getRepository(this.entity).findOne(option);
+    }
+
+    public async update(data: Partial<T>, option: UpdateOptions) {
+        const [updateCount] = await this.sequelize.getRepository(this.entity).update(data, option);
+        return updateCount === 0 ? false : true;
+    }
+
+    public async findAll(option?: FindOptions) {
+        return this.sequelize.getRepository(this.entity).findAll(option);
     }
 
 }

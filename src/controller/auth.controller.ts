@@ -7,7 +7,7 @@ import { User } from 'src/entity/sequelize/user.entity';
 import { Operator } from 'src/decorator/operator.decorator';
 
 @ApiBearerAuth()
-@ApiUseTags('授权模块')
+@ApiUseTags('Auth')
 @Controller('auth')
 export class AuthController {
 
