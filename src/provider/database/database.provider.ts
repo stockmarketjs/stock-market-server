@@ -8,25 +8,20 @@ import { StockOrder } from 'src/entity/sequelize/stock_order.entity';
 import { UserCapital } from 'src/entity/sequelize/user_capital.entity';
 import { UserStock } from 'src/entity/sequelize/user_stock.entity';
 import { UserStockOrder } from 'src/entity/sequelize/user_stock_order.entity';
+import { ConfigService } from '../config/config.service';
 
 export const databaseProviders = [
     {
         provide: ConstProvider.SEQUELIZE,
-        useFactory: async () => {
-            const sequelize = new Sequelize({
-                dialect: 'mysql',
-                host: 'localhost',
-                port: 3306,
-                username: 'root',
-                password: '19931124',
-                database: 'test',
-            });
+        useFactory: async (config: ConfigService) => {
+            const sequelize = new Sequelize(config.dbMysql);
             sequelize.addModels([
                 User, Stock, StockCapital, StockHistory, StockOrder,
                 UserCapital, UserStock, UserStockOrder,
             ]);
-            await sequelize.sync({force:true});
+            await sequelize.sync({ force: true });
             return sequelize;
         },
+        inject: [ConfigService],
     },
 ];

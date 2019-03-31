@@ -393,7 +393,7 @@ dist
 .history
 build
 .vscode
-config/*.json
+config/*.env
 coverage
 .nyc_output
 documentation

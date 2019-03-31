@@ -11,6 +11,7 @@ import { StockHistoryService } from 'src/service/stock_history.service';
 import { StockOrderService } from 'src/service/stock_order.service';
 import { UserStockOrderService } from 'src/service/user_stock_order.service';
 import { OrderService } from 'src/service/order.service';
+import { ConfigModule } from 'src/provider/config/config.module';
 
 @Module({
     imports: [
@@ -22,6 +23,7 @@ import { OrderService } from 'src/service/order.service';
                 expiresIn: '2d',
             },
         }),
+        ConfigModule,
     ],
     providers: [
         AuthService, JwtStrategy,
