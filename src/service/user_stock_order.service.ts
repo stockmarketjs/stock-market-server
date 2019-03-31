@@ -1,9 +1,9 @@
 import { Injectable, UnauthorizedException, NotFoundException, Inject, BadRequestException } from '@nestjs/common';
 import { BaseService } from './base.service';
-import { Transaction } from 'sequelize';
-import _ from 'lodash';
+import { Transaction, Op } from 'sequelize';
+import * as _ from 'lodash';
 import { UserStockOrderDao } from 'src/dao/user_stock_order.dao';
-import { UserStockOrderCreateBodyDto } from 'src/dto/user_stock_order/user_stock_order.dto';
+import { UserStockOrderCreateBodyDto, UserStockOrderUpdateBodyDto } from 'src/dto/user_stock_order/user_stock_order.dto';
 import { ConstData } from 'src/constant/data.const';
 
 @Injectable()
@@ -33,6 +33,50 @@ export class UserStockOrderService extends BaseService {
             transaction,
             lock: Transaction.LOCK.UPDATE,
         });
+    }
+
+    public async findAllByUserId(
+        userId: string,
+        transaction?: Transaction,
+    ) {
+        return this.userStockOrderDao.findAll({
+            where: {
+                userId,
+            },
+            transaction,
+        });
+    }
+
+    public async updateById(
+        id: string,
+        params: UserStockOrderUpdateBodyDto,
+        transaction?: Transaction,
+    ) {
+        return this.userStockOrderDao.update({
+            state: params.state,
+        }, {
+                where: {
+                    id,
+                },
+                transaction,
+            });
+    }
+
+    public async bulkUpdateByIds(
+        ids: string[],
+        params: UserStockOrderUpdateBodyDto,
+        transaction?: Transaction,
+    ) {
+        return this.userStockOrderDao.bulkUpdate({
+            state: params.state,
+        }, {
+                where: {
+                    id: {
+                        [Op.in]: ids,
+                    },
+                },
+                transaction,
+            });
     }
 
 }

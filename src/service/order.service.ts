@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException, NotFoundException, Inject, BadRequestException, Logger } from '@nestjs/common';
 import { Transaction, Op } from 'sequelize';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import { Moment } from 'src/common/util/moment';
 import { UserStockOrderService } from './user_stock_order.service';
 import { ConstProvider } from 'src/constant/provider.const';
@@ -26,17 +26,57 @@ export class OrderService {
         private readonly stockOrderService: StockOrderService,
     ) { }
 
+    public async lockReadyPool(
+        readyPool: UserStockOrder[],
+        transaction: Transaction,
+    ) {
+        await this.userStockOrderService.bulkUpdateByIds(readyPool.map(v => v.id), {
+            state: ConstData.ORDER_STATE.TRADEING,
+        }, transaction);
+    }
+
+    public async releaseReadyPool(
+        readyPool: UserStockOrder[],
+        transaction: Transaction,
+    ) {
+        await this.userStockOrderService.bulkUpdateByIds(readyPool.map(v => v.id), {
+            state: ConstData.ORDER_STATE.READY,
+        }, transaction);
+    }
+
     public async handle() {
         const stocks = await this.stockService.findAll();
         for (const stock of stocks) {
             Logger.log(`开始核算 ${stock.name}`);
             const newTransaction = await this.sequelize.transaction();
-            const finalOrders = await this.calcOneStockFinalOrders(stock.id, newTransaction);
-            Logger.log(`核算完毕成交单 ${stock.name}`);
-            const trade = await this.trade(finalOrders, newTransaction);
-            Logger.log(`资产交割完毕 ${stock.name}`);
-            await this.updateQuotation(trade, newTransaction);
-            Logger.log(`行情刷新结束 ${stock.name}`);
+
+            try {
+                const readyPool = await this.userStockOrderService.findAllReadyByStockIdWithLock(stock.id, newTransaction);
+                await this.lockReadyPool(readyPool, newTransaction);
+
+                const finalOrders = this.calcOneStockFinalOrders(readyPool);
+                Logger.log(`核算完毕成交单 ${stock.name}`);
+                if (finalOrders.length === 0) {
+                    Logger.log('暂无成交');
+                    await newTransaction.rollback();
+                    continue;
+                }
+                const trade = await this.trade(finalOrders, newTransaction);
+                Logger.log(`资产交割完毕 ${stock.name}`);
+                if (!trade) {
+                    Logger.log('暂无交割');
+                    await newTransaction.rollback();
+                    continue;
+                }
+                await this.updateQuotation(trade, newTransaction);
+                Logger.log(`行情刷新结束 ${stock.name}`);
+
+                await this.releaseReadyPool(readyPool, newTransaction);
+                await newTransaction.commit();
+            } catch (e) {
+                await newTransaction.rollback();
+                throw e;
+            }
         }
     }
 
@@ -68,8 +108,8 @@ export class OrderService {
      */
     private async trade(
         finalOrders: {
-            buyOrder: any,
-            soldOrder: any,
+            buyOrder: UserStockOrder,
+            soldOrder: UserStockOrder,
             price: number,
             hand: number,
         }[],
@@ -105,20 +145,29 @@ export class OrderService {
                 transaction,
             );
 
+            // 改变订单状态
+            await this.userStockOrderService.bulkUpdateByIds([
+                finalOrder.buyOrder.id,
+                finalOrder.soldOrder.id,
+            ], {
+                    state: ConstData.ORDER_STATE.SUCCESS,
+                }, transaction);
+
             // 写入成交的交易记录
             await this.stockOrderService.create({
                 stockId: finalOrder.buyOrder.stockId,
                 price: finalOrder.price,
                 minute: Moment().format('HH:mm'),
                 hand: finalOrder.hand,
+                date: Moment().format('YYYY-MM-DD'),
             });
         }
 
-        return {
+        return $.tail(finalOrders) ? {
             stockId: $.tail(finalOrders).buyOrder.stockId,
             price: $.tail(finalOrders).price,
             hand: $.tail(finalOrders).hand,
-        };
+        } : null;
     }
 
     /**
@@ -129,20 +178,32 @@ export class OrderService {
      * @returns
      * @memberof OrderService
      */
-    private async calcOneStockFinalOrders(
-        stockId: string,
-        transaction: Transaction,
-    ) {
-        const readyPool = await this.userStockOrderService.findAllReadyByStockIdWithLock(stockId, transaction);
-
-        const finalOrders: any[] = [];
-        let finalOrder: any;
+    private calcOneStockFinalOrders(
+        readyPool: UserStockOrder[],
+    ): {
+        buyOrder: UserStockOrder,
+        soldOrder: UserStockOrder,
+        price: number,
+        hand: number,
+    }[] {
+        const finalOrders: {
+            buyOrder: UserStockOrder,
+            soldOrder: UserStockOrder,
+            price: number,
+            hand: number,
+        }[] = [];
+        let finalOrder: {
+            buyOrder: UserStockOrder,
+            soldOrder: UserStockOrder,
+            price: number,
+            hand: number,
+        } | null;
         do {
             finalOrder = this.matchTrade(readyPool);
-            if (finalOrder != false) {
+            if (finalOrder != null) {
                 finalOrders.push(finalOrder);
             }
-        } while (finalOrder != false);
+        } while (finalOrder != null);
 
         return finalOrders;
     }
@@ -157,54 +218,72 @@ export class OrderService {
      */
     private matchTrade(
         readyPool: UserStockOrder[],
-    ) {
+    ): {
+        buyOrder: UserStockOrder,
+        soldOrder: UserStockOrder,
+        price: number,
+        hand: number,
+    } | null {
         // 获取市价池 优先
         // TODO:
         // 获取限价池
-        const limit_orders = _.filter(readyPool, { mode: ConstData.TRADE_MODE.LIMIT });
+        const limitOrders = _.filter(readyPool, { mode: ConstData.TRADE_MODE.LIMIT });
 
         // 获取最新订单
-        const current_order = _(limit_orders).orderBy('time', 'desc').first();
+        const currentOrder = _(limitOrders).orderBy('createdAt', 'desc').first();
+        if (!currentOrder) return null;
         // 获取限价买单池 较高价格优先 时间优先
-        const buy_orders = _(limit_orders).filter({ action: ConstData.TRADE_ACTION.BUY })
-            .orderBy(['price', 'time'], ['desc', 'asc']).value();
+        const buyOrders = _(limitOrders).filter({ type: ConstData.TRADE_ACTION.BUY })
+            .orderBy(['price', 'createdAt'], ['desc', 'asc']).value();
         // 获取限价卖单池 较低价格优先 时间优先
-        const sold_orders = _(limit_orders).filter({ action: ConstData.TRADE_ACTION.SOLD })
-            .orderBy(['price', 'time'], ['asc', 'asc']).value();
+        const soldOrders = _(limitOrders).filter({ type: ConstData.TRADE_ACTION.SOLD })
+            .orderBy(['price', 'createdAt'], ['asc', 'asc']).value();
 
-        const final_order = this.calcFinalPrice(buy_orders, sold_orders, current_order);
-        if (!final_order) {
+        const finalOrder = this.calcFinalPrice(buyOrders, soldOrders, currentOrder);
+        if (!finalOrder) {
             console.log('没有可以撮合的');
-            return false;
+            return null;
         } else {
-            if (final_order.buy_order.hand === final_order.sold_order.hand) {
+            if (finalOrder.buyOrder.hand === finalOrder.soldOrder.hand) {
                 // 移除已经成交的订单
-                _.remove(readyPool, final_order.buy_order);
-                _.remove(readyPool, final_order.sold_order);
+                _.remove(readyPool, pool => {
+                    return [
+                        finalOrder.buyOrder.id,
+                        finalOrder.soldOrder.id,
+                    ].indexOf(pool.id) >= 0;
+                });
                 // 执行交易
-                return _.assign(final_order, { hand: final_order.buy_order.hand });
-            } else if (final_order.buy_order.hand > final_order.sold_order.hand) {
+                return _.assign(finalOrder, { hand: finalOrder.buyOrder.hand });
+            } else if (finalOrder.buyOrder.hand > finalOrder.soldOrder.hand) {
                 // 移除已经完全成交订单
-                _.remove(readyPool, final_order.sold_order);
+                _.remove(readyPool, pool => {
+                    return pool.id === finalOrder.soldOrder.id;
+                });
                 // 将订单的买方和卖方的手数修改成一致
-                const source = _.cloneDeep(final_order);
-                source.buy_order.hand = final_order.sold_order.hand;
+                const source = _.cloneDeep(finalOrder);
+                source.buyOrder.hand = finalOrder.soldOrder.hand;
                 // 扣减部分成交的手数
-                const a = _.find(readyPool, final_order.buy_order) as any;
-                a.hand -= final_order.sold_order.hand;
+                const a = _.find(readyPool, pool => {
+                    return pool.id === finalOrder.buyOrder.id;
+                });
+                if (a) a.hand -= finalOrder.soldOrder.hand;
                 // 执行交易
-                return _.assign(source, { hand: final_order.sold_order.hand });
-            } else if (final_order.buy_order.hand < final_order.sold_order.hand) {
+                return _.assign(source, { hand: finalOrder.soldOrder.hand });
+            } else if (finalOrder.buyOrder.hand < finalOrder.soldOrder.hand) {
                 // 移除已经完全成交订单
-                _.remove(readyPool, final_order.buy_order);
+                _.remove(readyPool, pool => {
+                    return pool.id === finalOrder.buyOrder.id;
+                });
                 // 将订单的买方和卖方的手数修改成一致
-                const source = _.cloneDeep(final_order);
-                source.sold_order.hand = final_order.buy_order.hand;
+                const source = _.cloneDeep(finalOrder);
+                source.soldOrder.hand = finalOrder.buyOrder.hand;
                 // 扣减部分成交的手数
-                const a = _.find(readyPool, final_order.sold_order) as any;
-                a.hand -= final_order.buy_order.hand;
+                const a = _.find(readyPool, pool => {
+                    return pool.id === finalOrder.soldOrder.id;
+                });
+                if (a) a.hand -= finalOrder.buyOrder.hand;
                 // 执行交易
-                return _.assign(source, { hand: final_order.buy_order.hand });
+                return _.assign(source, { hand: finalOrder.buyOrder.hand });
             } else {
                 throw Error('计算买卖手数出现问题');
             }
@@ -220,45 +299,53 @@ export class OrderService {
      * @returns
      * @memberof OrderService
      */
-    private calcFinalPrice(buyOrders: any[], soldOrders: any[], currentOrder: any) {
+    private calcFinalPrice(
+        buyOrders: UserStockOrder[],
+        soldOrders: UserStockOrder[],
+        currentOrder: UserStockOrder,
+    ): {
+        buyOrder: UserStockOrder,
+        soldOrder: UserStockOrder,
+        price: number,
+    } | null {
         // 最高买入订单
-        const highest_buy_order = _.first(buyOrders);
+        const highestBuyOrder = _.first(buyOrders);
         // 最低卖出订单
-        const lowest_sold_order = _.first(soldOrders);
+        const lowestSoldOrder = _.first(soldOrders);
 
         // 没有买单卖单, 无法交易
-        if (!highest_buy_order && !lowest_sold_order) return false;
+        if (!highestBuyOrder && !lowestSoldOrder) return null;
 
         // 最高买入价格 与 最低卖出价格 相同, 则立即成交
-        if (highest_buy_order && lowest_sold_order &&
-            highest_buy_order.price === lowest_sold_order.price) {
+        if (highestBuyOrder && lowestSoldOrder &&
+            highestBuyOrder.price === lowestSoldOrder.price) {
             return {
-                buy_order: highest_buy_order,
-                sold_order: lowest_sold_order,
-                price: highest_buy_order.price,
+                buyOrder: highestBuyOrder,
+                soldOrder: lowestSoldOrder,
+                price: highestBuyOrder.price,
             };
         }
         // 申报价格买入 > 最低卖出价格, 则以最低卖出价格成交
-        else if (lowest_sold_order && currentOrder.action === ConstData.TRADE_ACTION.BUY &&
-            currentOrder.price > lowest_sold_order.price) {
+        else if (lowestSoldOrder && currentOrder.type === ConstData.TRADE_ACTION.BUY &&
+            currentOrder.price > lowestSoldOrder.price) {
             return {
-                buy_order: currentOrder,
-                sold_order: lowest_sold_order,
-                price: lowest_sold_order.price,
+                buyOrder: currentOrder,
+                soldOrder: lowestSoldOrder,
+                price: lowestSoldOrder.price,
             };
         }
         // 申报价格卖出 < 最高买入价格, 则以最高买入价格成交
-        else if (highest_buy_order && currentOrder.action === ConstData.TRADE_ACTION.SOLD &&
-            currentOrder.price < highest_buy_order.price) {
+        else if (highestBuyOrder && currentOrder.type === ConstData.TRADE_ACTION.SOLD &&
+            currentOrder.price < highestBuyOrder.price) {
             return {
-                buy_order: highest_buy_order,
-                sold_order: currentOrder,
-                price: highest_buy_order.price,
+                buyOrder: highestBuyOrder,
+                soldOrder: currentOrder,
+                price: highestBuyOrder.price,
             };
         }
         // 撮合失败
         else {
-            return false;
+            return null;
         }
     }
 

@@ -29,4 +29,9 @@ export class BaseDao<T extends Model<T>> {
         return this.sequelize.getRepository(this.entity).create(data, option);
     }
 
+    public async bulkUpdate(data: Partial<T>, option: UpdateOptions) {
+        const [updateCount] = await this.sequelize.getRepository(this.entity).update(data, option);
+        return updateCount === 0 ? false : true;
+    }
+
 }

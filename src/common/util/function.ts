@@ -1,5 +1,5 @@
 import * as uuid from 'uuid/v4';
-import _ from 'lodash';
+import * as _ from 'lodash';
 
 export class $ {
 

@@ -4,7 +4,6 @@ import { ApiBearerAuth, ApiUseTags, ApiOperation, ApiResponse } from '@nestjs/sw
 import { StockOrderService } from 'src/service/stock_order.service';
 import { StockOrder } from 'src/entity/sequelize/stock_order.entity';
 
-@UseGuards(AuthGuard())
 @ApiBearerAuth()
 @ApiUseTags('Stock - Order')
 @Controller('stocks/:stockId/orders')

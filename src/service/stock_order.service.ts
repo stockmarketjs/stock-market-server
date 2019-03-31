@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException, NotFoundException, Inject, BadRequestException } from '@nestjs/common';
 import { BaseService } from './base.service';
 import { Transaction, Op } from 'sequelize';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import { StockOrderDao } from 'src/dao/stock_order.dao';
 import { Moment } from 'src/common/util/moment';
 import { $ } from 'src/common/util/function';
@@ -52,8 +52,8 @@ export class StockOrderService extends BaseService {
                 end: '13:00',
             },
             {
-                begin: '13:00',
-                end: '09:00',
+                begin: '13:10',
+                end: '23:50',
             },
         ];
         // 格式化交易时间段

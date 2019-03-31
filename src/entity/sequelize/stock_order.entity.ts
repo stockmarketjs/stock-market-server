@@ -1,5 +1,6 @@
 import { Table, Column, Model, Unique, DataType } from 'sequelize-typescript';
 import { ApiModelProperty } from '@nestjs/swagger';
+import { $ } from 'src/common/util/function';
 
 @Table({
     timestamps: true,
@@ -11,6 +12,7 @@ export class StockOrder extends Model<StockOrder> {
     @Column({
         type: DataType.UUID,
         primaryKey: true,
+        defaultValue: DataType.UUIDV4,
     })
     readonly id: string;
 
@@ -26,6 +28,12 @@ export class StockOrder extends Model<StockOrder> {
         type: DataType.STRING(5),
     })
     minute: string;
+
+    @ApiModelProperty({ description: '成交日期' })
+    @Column({
+        type: DataType.STRING(10),
+    })
+    date: string;
 
     @ApiModelProperty({ description: '成交价' })
     @Column({

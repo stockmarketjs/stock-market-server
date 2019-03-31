@@ -2,6 +2,14 @@ import { IsDefined, IsString, IsInt } from 'class-validator';
 import { ApiModelProperty } from '@nestjs/swagger';
 import { ConstData } from 'src/constant/data.const';
 
+export class UserStockOrderUpdateBodyDto {
+
+    @ApiModelProperty({ description: '订单状态', enum: ConstData.ORDER_STATE })
+    @IsDefined() @IsInt()
+    state: ConstData.ORDER_STATE;
+
+}
+
 export class UserStockOrderCreateBodyDto {
 
     @ApiModelProperty({ description: '股票ID' })

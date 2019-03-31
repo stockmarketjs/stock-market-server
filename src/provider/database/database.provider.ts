@@ -25,7 +25,7 @@ export const databaseProviders = [
                 User, Stock, StockCapital, StockHistory, StockOrder,
                 UserCapital, UserStock, UserStockOrder,
             ]);
-            await sequelize.sync();
+            await sequelize.sync({force:true});
             return sequelize;
         },
     },

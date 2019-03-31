@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException, NotFoundException, Inject, BadRequestException } from '@nestjs/common';
 import { BaseService } from './base.service';
 import { Transaction } from 'sequelize';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import { UserStockDao } from 'src/dao/user_stock.dao';
 
 @Injectable()
@@ -22,8 +22,8 @@ export class UserStockService extends BaseService {
     }
 
     public async findOneByUserIdStockIdOrThrow(
-        stockId: string,
         userId: string,
+        stockId: string,
         transaction?: Transaction,
     ) {
         const userStock = await this.findOneByUserIdStockId(stockId, userId, transaction);

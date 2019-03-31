@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException, NotFoundException, Inject, BadRequestException } from '@nestjs/common';
 import { BaseService } from './base.service';
 import { Transaction, Op } from 'sequelize';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import { StockHistoryDao } from 'src/dao/stock_history.dao';
 import { Moment } from 'src/common/util/moment';
 

@@ -5,7 +5,7 @@ import { StockUpdateDto, StockFindAllDto } from 'src/dto/stock/stock.dto';
 import { ConstProvider } from 'src/constant/provider.const';
 import { Sequelize } from 'sequelize-typescript';
 import { Transaction } from 'sequelize';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import { StockCapitalDao } from 'src/dao/stock_capital.dao';
 import { Calc } from 'src/common/util/calc';
 import { Moment } from 'src/common/util/moment';
@@ -99,8 +99,8 @@ export class StockService extends BaseService {
                 end: '13:00',
             },
             {
-                begin: '13:00',
-                end: '09:00',
+                begin: '13:10',
+                end: '23:50',
             },
         ];
         for (const tradePeriod of tradePeriods) {

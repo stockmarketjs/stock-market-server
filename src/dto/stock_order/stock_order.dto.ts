@@ -7,6 +7,11 @@ export class StockOrderCreateBodyDto {
     @IsDefined() @IsString()
     stockId: string;
 
+    @ApiModelProperty({ description: '成交日期' })
+    @IsDefined() @IsString()
+
+    date: string;
+
     @ApiModelProperty({ description: '成交小时分钟' })
     @IsDefined() @IsString()
 
