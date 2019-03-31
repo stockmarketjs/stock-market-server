@@ -29,4 +29,49 @@ export class UserCapitalService extends BaseService {
         return userCapital;
     }
 
+    public async subtractUserCapital(
+        userId: string,
+        value: number,
+        transaction: Transaction,
+    ) {
+        return this.operatorUserCapital(
+            userId,
+            -value,
+            transaction,
+        );
+    }
+
+    public async addUserCapital(
+        userId: string,
+        value: number,
+        transaction: Transaction,
+    ) {
+        return this.operatorUserCapital(
+            userId,
+            value,
+            transaction,
+        );
+    }
+
+    private async operatorUserCapital(
+        userId: string,
+        value: number,
+        transaction: Transaction,
+    ) {
+        const userCapital = await this.userCapitalDao.findOne({
+            where: {
+                userId,
+            },
+            transaction,
+            lock: Transaction.LOCK.UPDATE,
+        });
+        if (!userCapital) throw new BadRequestException('没有对应的资金账户');
+        return this.userCapitalDao.update({
+            cash: userCapital.cash + value,
+        }, {
+                where: { id: userCapital.id },
+                transaction,
+            });
+    }
+
 }

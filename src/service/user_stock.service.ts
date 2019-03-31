@@ -31,4 +31,67 @@ export class UserStockService extends BaseService {
         return userStock;
     }
 
+    public async findAllByUserId(
+        userId: string,
+        transaction?: Transaction,
+    ) {
+        return this.userStockDao.findAll({
+            where: {
+                userId,
+            },
+            transaction,
+        });
+    }
+
+    public async subtractUserStock(
+        userId: string,
+        stockId: string,
+        value: number,
+        transaction: Transaction,
+    ) {
+        return this.operatorUserStock(
+            userId,
+            stockId,
+            -value,
+            transaction,
+        );
+    }
+
+    public async addUserStock(
+        userId: string,
+        stockId: string,
+        value: number,
+        transaction: Transaction,
+    ) {
+        return this.operatorUserStock(
+            userId,
+            stockId,
+            value,
+            transaction,
+        );
+    }
+
+    private async operatorUserStock(
+        userId: string,
+        stockId: string,
+        value: number,
+        transaction: Transaction,
+    ) {
+        const userStock = await this.userStockDao.findOne({
+            where: {
+                userId,
+                stockId,
+            },
+            transaction,
+            lock: Transaction.LOCK.UPDATE,
+        });
+        if (!userStock) throw new BadRequestException('没有对应的股票账户');
+        return this.userStockDao.update({
+            amount: userStock.amount + value,
+        }, {
+                where: { id: userStock.id },
+                transaction,
+            });
+    }
+
 }

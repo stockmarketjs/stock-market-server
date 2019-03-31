@@ -13,6 +13,7 @@ import { UserCapitalService } from './user_capital.service';
 import { $ } from 'src/common/util/function';
 import { ConstData } from 'src/constant/data.const';
 import { UserStockService } from './user_stock.service';
+import { UserStockOrderService } from './user_stock_order.service';
 
 @Injectable()
 export class StockService extends BaseService {
@@ -23,6 +24,7 @@ export class StockService extends BaseService {
         private readonly stockCapitalDao: StockCapitalDao,
         private readonly userCapitalService: UserCapitalService,
         private readonly userStockService: UserStockService,
+        private readonly userStockOrderService: UserStockOrderService,
     ) {
         super();
     }
@@ -137,19 +139,18 @@ export class StockService extends BaseService {
         price: number,
         hand: number,
         operatorId: string,
-        action: ConstData.TRADE_ACTION,
+        type: ConstData.TRADE_ACTION,
         mode: ConstData.TRADE_MODE = ConstData.TRADE_MODE.LIMIT,
     ) {
-        return {
-            uuid: $.getUuid(),
+        return this.userStockOrderService.create({
             stockId,
             price,
             hand,
             mode,
             userId: operatorId,
-            action,
-            time: Moment().toDate(),
-        };
+            type,
+            state: ConstData.ORDER_STATE.READY,
+        });
     }
 
     public async validEnoughCapital(

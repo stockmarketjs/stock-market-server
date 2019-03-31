@@ -9,7 +9,7 @@ export function logger(req: express.Request, res: express.Response, next) {
 
 function formatRequest(req: express.Request) {
     return JSON.stringify({
-        path: req.path,
+        url: req.url,
         method: req.method,
         params: req.params,
         body: req.body,

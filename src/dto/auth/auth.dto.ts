@@ -14,6 +14,10 @@ export class AuthLoginDto {
     readonly password: string;
 }
 
+export class AuthLoginBodyDto extends AuthLoginDto {
+
+}
+
 export class AuthLoginQueryDto extends AuthLoginDto {
 
 }

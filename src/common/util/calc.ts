@@ -23,4 +23,20 @@ export class Calc {
         return money - price * amount;
     }
 
+    /**
+     * 购买股票, 所需要花费的资金
+     *
+     * @static
+     * @param {number} price
+     * @param {number} hand
+     * @returns
+     * @memberof Calc
+     */
+    public static calcStockBuyCost(price: number, hand: number) {
+        const handPerStock = 100;
+
+        const amount = hand * handPerStock;
+        return price * amount;
+    }
+
 }

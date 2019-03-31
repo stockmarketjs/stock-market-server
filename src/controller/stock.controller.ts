@@ -7,7 +7,6 @@ import { StockFindAllDto, StockBuyDto, StockSoldDto } from 'src/dto/stock/stock.
 import { AuthUser } from 'src/dto/auth/auth.dto';
 import { Stock } from 'src/entity/sequelize/stock.entity';
 
-@UseGuards(AuthGuard())
 @ApiBearerAuth()
 @ApiUseTags('Stock')
 @Controller('stocks')
@@ -33,6 +32,7 @@ export class StockController {
         return this.stockService.findOneByIdOrThrow(id);
     }
 
+    @UseGuards(AuthGuard())
     @ApiOperation({ title: '买进股票' })
     @ApiResponse({ status: HttpStatus.OK })
     @Post(':id/buy')
@@ -46,6 +46,7 @@ export class StockController {
         return true;
     }
 
+    @UseGuards(AuthGuard())
     @ApiOperation({ title: '卖出股票' })
     @ApiResponse({ status: HttpStatus.OK })
     @Post(':id/sold')

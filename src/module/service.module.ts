@@ -9,6 +9,8 @@ import { UserCapitalService } from 'src/service/user_capital.service';
 import { UserStockService } from 'src/service/user_stock.service';
 import { StockHistoryService } from 'src/service/stock_history.service';
 import { StockOrderService } from 'src/service/stock_order.service';
+import { UserStockOrderService } from 'src/service/user_stock_order.service';
+import { OrderService } from 'src/service/order.service';
 
 @Module({
     imports: [
@@ -24,12 +26,12 @@ import { StockOrderService } from 'src/service/stock_order.service';
     providers: [
         AuthService, JwtStrategy,
         StockService, UserCapitalService, UserStockService, StockHistoryService,
-        StockOrderService,
+        StockOrderService, UserStockOrderService, OrderService,
     ],
     exports: [
         AuthService, PassportModule,
         StockService, UserCapitalService, UserStockService, StockHistoryService,
-        StockOrderService,
+        StockOrderService, UserStockOrderService,
     ],
 })
 export class ServiceModule { }

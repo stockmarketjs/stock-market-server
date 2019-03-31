@@ -1,6 +1,6 @@
-import { Controller, Get, Query, UseGuards, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards, HttpStatus, Post, Body } from '@nestjs/common';
 import { AuthService } from 'src/service/auth.service';
-import { AuthLoginQueryDto, AuthLoginResultDto, AuthUser } from 'src/dto/auth/auth.dto';
+import { AuthLoginQueryDto, AuthLoginResultDto, AuthUser, AuthLoginBodyDto } from 'src/dto/auth/auth.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiUseTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { User } from 'src/entity/sequelize/user.entity';
@@ -20,6 +20,15 @@ export class AuthController {
     @Get('login')
     public async getLogin(
         @Query() query: AuthLoginQueryDto,
+    ): Promise<AuthLoginResultDto> {
+        return this.authService.login(query);
+    }
+
+    @ApiOperation({ title: '登录' })
+    @ApiResponse({ status: HttpStatus.OK, type: AuthLoginResultDto })
+    @Post('login')
+    public async postLogin(
+        @Body() query: AuthLoginBodyDto,
     ): Promise<AuthLoginResultDto> {
         return this.authService.login(query);
     }

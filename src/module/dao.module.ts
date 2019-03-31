@@ -7,17 +7,17 @@ import { StockOrderDao } from 'src/dao/stock_order.dao';
 import { UserCapitalDao } from 'src/dao/user_capital.dao';
 import { UserStockDao } from 'src/dao/user_stock.dao';
 import { StockCapitalDao } from 'src/dao/stock_capital.dao';
-import { UserStockOderDao } from 'src/dao/user_stock_order.dao';
+import { UserStockOrderDao } from 'src/dao/user_stock_order.dao';
 
 @Module({
     imports: [DatabaseModule],
     providers: [
         UserDao, StockDao, StockHistoryDao, StockOrderDao, UserCapitalDao, UserStockDao,
-        StockCapitalDao, UserStockOderDao,
+        StockCapitalDao, UserStockOrderDao,
     ],
     exports: [
         UserDao, StockDao, StockHistoryDao, StockOrderDao, UserCapitalDao, UserStockDao,
-        StockCapitalDao, UserStockOderDao,
+        StockCapitalDao, UserStockOrderDao,
     ],
 })
 export class DaoModule { }

@@ -6,6 +6,12 @@ import { ConstData } from 'src/constant/data.const';
     timestamps: true,
     paranoid: true,
     underscored: true,
+    indexes: [
+        {
+            unique: false,
+            fields: ['stock_id', 'state'],
+        },
+    ],
 })
 export class UserStockOrder extends Model<UserStockOrder> {
     @ApiModelProperty({ description: 'ID' })
@@ -38,6 +44,12 @@ export class UserStockOrder extends Model<UserStockOrder> {
         type: DataType.TINYINT,
     })
     type: ConstData.TRADE_ACTION;
+
+    @ApiModelProperty({ description: '订单模式', enum: ConstData.TRADE_MODE })
+    @Column({
+        type: DataType.TINYINT,
+    })
+    mode: ConstData.TRADE_MODE;
 
     @ApiModelProperty({ description: '价格' })
     @Column({

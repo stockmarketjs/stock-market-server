@@ -6,6 +6,7 @@ import { StockOrderDao } from 'src/dao/stock_order.dao';
 import { Moment } from 'src/common/util/moment';
 import { $ } from 'src/common/util/function';
 import { StockOrder } from 'src/entity/sequelize/stock_order.entity';
+import { StockOrderCreateBodyDto } from 'src/dto/stock_order/stock_order.dto';
 
 @Injectable()
 export class StockOrderService extends BaseService {
@@ -14,6 +15,12 @@ export class StockOrderService extends BaseService {
         private readonly stockOrderDao: StockOrderDao,
     ) {
         super();
+    }
+
+    public async create(
+        params: StockOrderCreateBodyDto,
+    ) {
+        return this.stockOrderDao.create(params);
     }
 
     public async findAllOfDate(
