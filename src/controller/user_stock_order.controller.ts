@@ -1,8 +1,8 @@
 import { Controller, Get, Query, UseGuards, HttpStatus, Patch, Param, Body, Post } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiUseTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { UserStockOrderService } from 'src/service/user_stock_order.service';
-import { UserStockOrder } from 'src/entity/sequelize/user_stock_order.entity';
+import { UserStockOrderService } from '../service/user_stock_order.service';
+import { UserStockOrder } from '../entity/sequelize/user_stock_order.entity';
 
 @UseGuards(AuthGuard())
 @ApiBearerAuth()

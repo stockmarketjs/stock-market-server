@@ -1,11 +1,11 @@
 import { Controller, Get, Query, UseGuards, HttpStatus, Post, Body } from '@nestjs/common';
-import { AuthService } from 'src/service/auth.service';
-import { AuthLoginQueryDto, AuthUser, AuthLoginBodyDto, AuthRegisterBodyDto } from 'src/dto/auth/auth.dto';
+import { AuthService } from '../service/auth.service';
+import { AuthLoginQueryDto, AuthUser, AuthLoginBodyDto, AuthRegisterBodyDto } from '../dto/auth/auth.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiUseTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { User } from 'src/entity/sequelize/user.entity';
-import { Operator } from 'src/decorator/operator.decorator';
-import { AuthLoginVo, AuthRegisterVo } from 'src/vo/auth.vo';
+import { User } from '../entity/sequelize/user.entity';
+import { Operator } from '../decorator/operator.decorator';
+import { AuthLoginVo, AuthRegisterVo } from '../vo/auth.vo';
 
 @ApiBearerAuth()
 @ApiUseTags('Auth')

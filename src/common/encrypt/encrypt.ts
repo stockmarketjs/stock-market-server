@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import { ConfigServiceStatic } from 'src/provider/config/config.service';
+import { ConfigServiceStatic } from '../../provider/config/config.service';
 
 export class Encrypt {
 

@@ -1,6 +1,5 @@
 import { Table, Column, Model, Unique, DataType } from 'sequelize-typescript';
 import { ApiModelProperty } from '@nestjs/swagger';
-import { $ } from 'src/common/util/function';
 
 @Table({
     timestamps: true,

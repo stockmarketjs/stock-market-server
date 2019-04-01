@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { ConstProvider } from 'src/constant/provider.const';
 import { Sequelize, Model } from 'sequelize-typescript';
 import { FindOptions, UpdateOptions, CreateOptions, CountOptions } from 'sequelize';
+import { ConstProvider } from '../constant/provider.const';
 
 @Injectable()
 export class BaseDao<T extends Model<T>> {

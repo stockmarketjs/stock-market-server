@@ -1,11 +1,11 @@
 import { Controller, Get, Query, UseGuards, HttpStatus, Patch, Param, Body, Post } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiUseTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { Operator } from 'src/decorator/operator.decorator';
-import { StockService } from 'src/service/stock.service';
-import { StockFindAllDto, StockBuyDto, StockSoldDto } from 'src/dto/stock/stock.dto';
-import { AuthUser } from 'src/dto/auth/auth.dto';
-import { Stock } from 'src/entity/sequelize/stock.entity';
+import { Operator } from '../decorator/operator.decorator';
+import { StockService } from '../service/stock.service';
+import { StockFindAllDto, StockBuyDto, StockSoldDto } from '../dto/stock/stock.dto';
+import { AuthUser } from '../dto/auth/auth.dto';
+import { Stock } from '../entity/sequelize/stock.entity';
 
 @ApiBearerAuth()
 @ApiUseTags('Stock')

@@ -1,6 +1,6 @@
 import { IsDefined, IsString, IsInt } from 'class-validator';
 import { ApiModelProperty } from '@nestjs/swagger';
-import { Stock } from 'src/entity/sequelize/stock.entity';
+import { Stock } from '../../entity/sequelize/stock.entity';
 
 export class StockUpdateDto {
     @ApiModelProperty({ description: '成交价' })

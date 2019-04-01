@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { BaseDao } from './base.dao';
-import { User } from 'src/entity/sequelize/user.entity';
 import { FindOptions } from 'sequelize';
+import { User } from '../entity/sequelize/user.entity';
 
 @Injectable()
 export class UserDao extends BaseDao<User> {

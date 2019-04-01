@@ -1,9 +1,9 @@
 import { Controller, Get, Query, UseGuards, HttpStatus, Patch, Param, Body, Post } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiUseTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { StockHistoryService } from 'src/service/stock_history.service';
-import { Moment } from 'src/common/util/moment';
-import { StockHistory } from 'src/entity/sequelize/stock_history.entity';
+import { StockHistoryService } from '../service/stock_history.service';
+import { Moment } from '../common/util/moment';
+import { StockHistory } from '../entity/sequelize/stock_history.entity';
 
 @UseGuards(AuthGuard())
 @ApiBearerAuth()

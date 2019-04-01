@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { BaseDao } from './base.dao';
-import { UserStockOrder } from 'src/entity/sequelize/user_stock_order.entity';
+import { UserStockOrder } from '../entity/sequelize/user_stock_order.entity';
 
 @Injectable()
 export class UserStockOrderDao extends BaseDao<UserStockOrder> {

@@ -1,8 +1,8 @@
 import { Injectable, UnauthorizedException, NotFoundException, BadRequestException } from '@nestjs/common';
 import { BaseService } from './base.service';
-import { UserDao } from 'src/dao/user.dao';
-import { User } from 'src/entity/sequelize/user.entity';
 import { Transaction } from 'sequelize/types';
+import { UserDao } from '../dao/user.dao';
+import { User } from '../entity/sequelize/user.entity';
 
 @Injectable()
 export class UserService extends BaseService {

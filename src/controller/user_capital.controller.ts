@@ -1,8 +1,8 @@
 import { Controller, Get, Query, UseGuards, HttpStatus, Patch, Param, Body, Post } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiUseTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { UserCapitalService } from 'src/service/user_capital.service';
-import { UserCapital } from 'src/entity/sequelize/user_capital.entity';
+import { UserCapitalService } from '../service/user_capital.service';
+import { UserCapital } from '../entity/sequelize/user_capital.entity';
 
 @UseGuards(AuthGuard())
 @ApiBearerAuth()

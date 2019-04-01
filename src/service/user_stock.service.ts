@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException, NotFoundException, Inject, BadReques
 import { BaseService } from './base.service';
 import { Transaction } from 'sequelize';
 import * as _ from 'lodash';
-import { UserStockDao } from 'src/dao/user_stock.dao';
+import { UserStockDao } from '../dao/user_stock.dao';
 
 @Injectable()
 export class UserStockService extends BaseService {

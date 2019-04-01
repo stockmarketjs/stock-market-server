@@ -1,13 +1,13 @@
 import { Injectable, UnauthorizedException, NotFoundException, BadRequestException, Logger, Inject } from '@nestjs/common';
 import { BaseService } from './base.service';
-import { $ } from 'src/common/util/function';
 import { OrderService } from './order.service';
 import { UserCapitalService } from './user_capital.service';
 import { CronJob } from 'cron';
 import { AuthService } from './auth.service';
 import { UserService } from './user.service';
 import { Sequelize } from 'sequelize-typescript';
-import { ConstProvider } from 'src/constant/provider.const';
+import { ConstProvider } from '../constant/provider.const';
+import { $ } from '../common/util/function';
 
 @Injectable()
 export class CronService extends BaseService {

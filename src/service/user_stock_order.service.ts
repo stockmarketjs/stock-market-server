@@ -2,9 +2,9 @@ import { Injectable, UnauthorizedException, NotFoundException, Inject, BadReques
 import { BaseService } from './base.service';
 import { Transaction, Op } from 'sequelize';
 import * as _ from 'lodash';
-import { UserStockOrderDao } from 'src/dao/user_stock_order.dao';
-import { UserStockOrderCreateBodyDto, UserStockOrderUpdateBodyDto } from 'src/dto/user_stock_order/user_stock_order.dto';
-import { ConstData } from 'src/constant/data.const';
+import { UserStockOrderDao } from '../dao/user_stock_order.dao';
+import { UserStockOrderCreateBodyDto, UserStockOrderUpdateBodyDto } from '../dto/user_stock_order/user_stock_order.dto';
+import { ConstData } from '../constant/data.const';
 
 @Injectable()
 export class UserStockOrderService extends BaseService {

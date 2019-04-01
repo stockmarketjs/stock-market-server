@@ -1,6 +1,6 @@
 import { IsDefined, IsString, IsInt } from 'class-validator';
 import { ApiModelProperty } from '@nestjs/swagger';
-import { ConstData } from 'src/constant/data.const';
+import { ConstData } from '../../constant/data.const';
 
 export class UserStockOrderUpdateBodyDto {
 

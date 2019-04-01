@@ -1,14 +1,14 @@
 import { Sequelize } from 'sequelize-typescript';
-import { User } from 'src/entity/sequelize/user.entity';
-import { ConstProvider } from 'src/constant/provider.const';
-import { Stock } from 'src/entity/sequelize/stock.entity';
-import { StockCapital } from 'src/entity/sequelize/stock_capital.entity';
-import { StockHistory } from 'src/entity/sequelize/stock_history.entity';
-import { StockOrder } from 'src/entity/sequelize/stock_order.entity';
-import { UserCapital } from 'src/entity/sequelize/user_capital.entity';
-import { UserStock } from 'src/entity/sequelize/user_stock.entity';
-import { UserStockOrder } from 'src/entity/sequelize/user_stock_order.entity';
+import { User } from '../../entity/sequelize/user.entity';
+import { ConstProvider } from '../../constant/provider.const';
+import { Stock } from '../../entity/sequelize/stock.entity';
+import { StockCapital } from '../../entity/sequelize/stock_capital.entity';
+import { StockHistory } from '../../entity/sequelize/stock_history.entity';
+import { StockOrder } from '../../entity/sequelize/stock_order.entity';
+import { UserCapital } from '../../entity/sequelize/user_capital.entity';
+import { UserStock } from '../../entity/sequelize/user_stock.entity';
 import { ConfigService } from '../config/config.service';
+import { UserStockOrder } from '../../entity/sequelize/user_stock_order.entity';
 
 export const databaseProviders = [
     {
@@ -19,7 +19,7 @@ export const databaseProviders = [
                 User, Stock, StockCapital, StockHistory, StockOrder,
                 UserCapital, UserStock, UserStockOrder,
             ]);
-            await sequelize.sync({ force: true });
+            // await sequelize.sync({ force: true });
             return sequelize;
         },
         inject: [ConfigService],

@@ -1,12 +1,12 @@
 import { Injectable, UnauthorizedException, NotFoundException, BadRequestException } from '@nestjs/common';
 import { BaseService } from './base.service';
-import { AuthLoginQueryDto, AuthUser, AuthRegisterBodyDto } from 'src/dto/auth/auth.dto';
-import { UserDao } from 'src/dao/user.dao';
 import { JwtService } from '@nestjs/jwt';
-import { AuthRegisterVo, AuthLoginVo } from 'src/vo/auth.vo';
-import { Encrypt } from 'src/common/encrypt/encrypt';
-import { $ } from 'src/common/util/function';
 import { Transaction } from 'sequelize/types';
+import { AuthLoginQueryDto, AuthRegisterBodyDto, AuthUser } from '../dto/auth/auth.dto';
+import { Encrypt } from '../common/encrypt/encrypt';
+import { AuthRegisterVo, AuthLoginVo } from '../vo/auth.vo';
+import { $ } from '../common/util/function';
+import { UserDao } from '../dao/user.dao';
 
 @Injectable()
 export class AuthService extends BaseService {

@@ -1,12 +1,14 @@
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
+import * as path from 'path';
 
 export class ConfigService {
 
     private readonly envConfig: { [key: string]: string };
 
-    constructor(filePath: string) {
-        this.envConfig = dotenv.parse(fs.readFileSync(filePath));
+    constructor() {
+        this.envConfig = process.env.SERVER_PORT ? process.env as { [key: string]: string } :
+            dotenv.parse(fs.readFileSync(path.resolve(`${process.cwd()}/config`, 'default.env')));
     }
 
     get(key: string): string {
@@ -41,4 +43,4 @@ export class ConfigService {
 
 }
 
-export const ConfigServiceStatic = new ConfigService(__dirname + `/../../../config/default.env`);
+export const ConfigServiceStatic = new ConfigService();

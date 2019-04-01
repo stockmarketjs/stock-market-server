@@ -2,8 +2,8 @@ import { Injectable, UnauthorizedException, NotFoundException, Inject, BadReques
 import { BaseService } from './base.service';
 import { Transaction, Op } from 'sequelize';
 import * as _ from 'lodash';
-import { StockHistoryDao } from 'src/dao/stock_history.dao';
-import { Moment } from 'src/common/util/moment';
+import { StockHistoryDao } from '../dao/stock_history.dao';
+import { Moment } from '../common/util/moment';
 
 @Injectable()
 export class StockHistoryService extends BaseService {
