@@ -20,8 +20,8 @@ export class UserCapitalController {
     public async index(
         @Param('userId') userId: string,
     ) {
-        const res = await this.userCapitalService.findOneByUserIdOrThrow(userId);
-        return [res];
+        const res = await this.userCapitalService.findOneByUserId(userId);
+        return res ? [res] : [];
     }
 
     @ApiOperation({ title: '单个用户的开户' })

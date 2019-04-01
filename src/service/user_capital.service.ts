@@ -29,10 +29,24 @@ export class UserCapitalService extends BaseService {
         return userCapital;
     }
 
+    public async validCreate(
+        userId: string,
+        transaction?: Transaction,
+    ) {
+        const count = await this.userCapitalDao.count({
+            where: {
+                userId,
+            },
+            transaction,
+        });
+        if (count === 1) throw new BadRequestException('不能重复创建人民币账户');
+    }
+
     public async create(
         userId: string,
         transaction?: Transaction,
     ) {
+        await this.validCreate(userId, transaction);
         return this.userCapitalDao.create({
             userId,
             cash: 0,
