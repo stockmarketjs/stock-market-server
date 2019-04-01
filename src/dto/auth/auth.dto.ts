@@ -18,11 +18,10 @@ export class AuthLoginBodyDto extends AuthLoginDto {
 
 }
 
-export class AuthLoginQueryDto extends AuthLoginDto {
+export class AuthRegisterBodyDto extends AuthLoginDto {
 
 }
 
-export class AuthLoginResultDto {
-    @ApiModelProperty({ description: 'TOKEN' })
-    readonly token: string;
+export class AuthLoginQueryDto extends AuthLoginDto {
+
 }

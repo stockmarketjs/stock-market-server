@@ -1,10 +1,11 @@
 import { Controller, Get, Query, UseGuards, HttpStatus, Post, Body } from '@nestjs/common';
 import { AuthService } from 'src/service/auth.service';
-import { AuthLoginQueryDto, AuthLoginResultDto, AuthUser, AuthLoginBodyDto } from 'src/dto/auth/auth.dto';
+import { AuthLoginQueryDto, AuthUser, AuthLoginBodyDto, AuthRegisterBodyDto } from 'src/dto/auth/auth.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiUseTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { User } from 'src/entity/sequelize/user.entity';
 import { Operator } from 'src/decorator/operator.decorator';
+import { AuthLoginVo, AuthRegisterVo } from 'src/vo/auth.vo';
 
 @ApiBearerAuth()
 @ApiUseTags('Auth')
@@ -16,21 +17,30 @@ export class AuthController {
     ) { }
 
     @ApiOperation({ title: '登录' })
-    @ApiResponse({ status: HttpStatus.OK, type: AuthLoginResultDto })
+    @ApiResponse({ status: HttpStatus.OK, type: AuthLoginVo })
     @Get('login')
     public async getLogin(
         @Query() query: AuthLoginQueryDto,
-    ): Promise<AuthLoginResultDto> {
+    ): Promise<AuthLoginVo> {
         return this.authService.login(query);
     }
 
     @ApiOperation({ title: '登录' })
-    @ApiResponse({ status: HttpStatus.OK, type: AuthLoginResultDto })
+    @ApiResponse({ status: HttpStatus.OK, type: AuthLoginVo })
     @Post('login')
     public async postLogin(
-        @Body() query: AuthLoginBodyDto,
-    ): Promise<AuthLoginResultDto> {
-        return this.authService.login(query);
+        @Body() body: AuthLoginBodyDto,
+    ): Promise<AuthLoginVo> {
+        return this.authService.login(body);
+    }
+
+    @ApiOperation({ title: '注册' })
+    @ApiResponse({ status: HttpStatus.OK, type: AuthRegisterVo })
+    @Post('register')
+    public async postRegister(
+        @Body() body: AuthRegisterBodyDto,
+    ): Promise<AuthRegisterVo> {
+        return this.authService.register(body);
     }
 
     @UseGuards(AuthGuard())

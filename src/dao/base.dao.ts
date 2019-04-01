@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { ConstProvider } from 'src/constant/provider.const';
 import { Sequelize, Model } from 'sequelize-typescript';
-import { FindOptions, UpdateOptions, CreateOptions } from 'sequelize';
+import { FindOptions, UpdateOptions, CreateOptions, CountOptions } from 'sequelize';
 
 @Injectable()
 export class BaseDao<T extends Model<T>> {
@@ -32,6 +32,10 @@ export class BaseDao<T extends Model<T>> {
     public async bulkUpdate(data: Partial<T>, option: UpdateOptions) {
         const [updateCount] = await this.sequelize.getRepository(this.entity).update(data, option);
         return updateCount === 0 ? false : true;
+    }
+
+    public async count(option?: CountOptions) {
+        return this.sequelize.getRepository(this.entity).count(option);
     }
 
 }

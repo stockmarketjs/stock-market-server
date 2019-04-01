@@ -17,6 +17,10 @@ export class ConfigService {
         return Number(this.envConfig.SERVER_PORT);
     }
 
+    get privateKey(): string {
+        return this.envConfig.SECURITY_PRIVATE_KEY;
+    }
+
     get dbMysql(): {
         dialect: 'mysql',
         host: string,
@@ -36,3 +40,5 @@ export class ConfigService {
     }
 
 }
+
+export const ConfigServiceStatic = new ConfigService(__dirname + `/../../../config/default.env`);
