@@ -9,6 +9,8 @@ import {
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { OrderService } from './service/order.service';
 import { CronJob } from 'cron';
+import { AuthService } from './service/auth.service';
+import { $ } from './common/util/function';
 
 async function bootstrap() {
     const app = await NestFactory.create<NestFastifyApplication>(
@@ -38,12 +40,22 @@ async function bootstrap() {
     SwaggerModule.setup('docs', app, document);
 
     const orderService = app.get(OrderService);
-    const job = new CronJob('*/30 * * * * *', async () => {
+    const authService = app.get(AuthService);
+    const handleJob = new CronJob('*/30 * * * * *', async () => {
         Logger.log('核算开始');
         await orderService.handle();
         Logger.log('核算结束');
     });
-    job.start();
+    handleJob.start();
+    const createRobotJob = new CronJob('0 */20 * * * *', async () => {
+        Logger.log('创建机器人开始');
+        await authService.register({
+            account: `robot_${$.getUuid()}`,
+            password: $.getUuid(),
+        });
+        Logger.log('创建机器人结束');
+    });
+    createRobotJob.start();
 
     await app.listen(3000);
 }
