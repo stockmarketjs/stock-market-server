@@ -8,6 +8,7 @@ import {
 } from '@nestjs/platform-fastify';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { CronService } from './service/cron.service';
+import { ConfigServiceStatic } from './provider/config/config.service';
 
 async function bootstrap() {
     const app = await NestFactory.create<NestFastifyApplication>(
@@ -39,6 +40,6 @@ async function bootstrap() {
     const cronService = app.get(CronService);
     await cronService.fire();
 
-    await app.listen(3000);
+    await app.listen(ConfigServiceStatic.port);
 }
 bootstrap();
