@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import { logger } from './middleware/logger.middleware';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import {
-    // FastifyAdapter,
+    FastifyAdapter,
     NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
@@ -13,7 +13,7 @@ import { ConfigServiceStatic } from './provider/config/config.service';
 async function bootstrap() {
     const app = await NestFactory.create<NestFastifyApplication>(
         AppModule,
-        // new FastifyAdapter(),
+        new FastifyAdapter(),
         { bodyParser: true },
     );
 
@@ -40,6 +40,6 @@ async function bootstrap() {
     const cronService = app.get(CronService);
     await cronService.fire();
 
-    await app.listen(ConfigServiceStatic.port);
+    await app.listen(ConfigServiceStatic.port, '0.0.0.0');
 }
 bootstrap();
