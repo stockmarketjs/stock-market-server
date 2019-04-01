@@ -12,6 +12,8 @@ import { StockOrderService } from 'src/service/stock_order.service';
 import { UserStockOrderService } from 'src/service/user_stock_order.service';
 import { OrderService } from 'src/service/order.service';
 import { ConfigModule } from 'src/provider/config/config.module';
+import { CronService } from 'src/service/cron.service';
+import { UserService } from 'src/service/user.service';
 
 @Module({
     imports: [
@@ -29,11 +31,13 @@ import { ConfigModule } from 'src/provider/config/config.module';
         AuthService, JwtStrategy,
         StockService, UserCapitalService, UserStockService, StockHistoryService,
         StockOrderService, UserStockOrderService, OrderService,
+        CronService, UserService,
     ],
     exports: [
         AuthService, PassportModule,
         StockService, UserCapitalService, UserStockService, StockHistoryService,
         StockOrderService, UserStockOrderService,
+        CronService, UserService,
     ],
 })
 export class ServiceModule { }

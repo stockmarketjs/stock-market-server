@@ -6,6 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthRegisterVo, AuthLoginVo } from 'src/vo/auth.vo';
 import { Encrypt } from 'src/common/encrypt/encrypt';
 import { $ } from 'src/common/util/function';
+import { Transaction } from 'sequelize/types';
 
 @Injectable()
 export class AuthService extends BaseService {
@@ -35,17 +36,20 @@ export class AuthService extends BaseService {
 
     public async validRegister(
         params: AuthRegisterBodyDto,
+        transaction?: Transaction,
     ) {
         const countOfUsers = await this.userDao.count({
             where: {
                 account: params.account,
             },
+            transaction,
         });
         if (countOfUsers > 0) throw new BadRequestException('账号已存在');
     }
 
     public async register(
         params: AuthRegisterBodyDto,
+        transaction?: Transaction,
     ): Promise<AuthRegisterVo> {
         await this.validRegister(params);
         const id = $.getUuid();
@@ -53,8 +57,8 @@ export class AuthService extends BaseService {
             id,
             account: params.account,
             password: Encrypt.make([params.password, id]),
-        });
-        return { account: user.account };
+        }, { transaction });
+        return { account: user.account, id: user.id };
     }
 
     public async findOneById(id: string) {

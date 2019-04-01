@@ -29,6 +29,16 @@ export class UserCapitalService extends BaseService {
         return userCapital;
     }
 
+    public async create(
+        userId: string,
+        transaction?: Transaction,
+    ) {
+        return this.userCapitalDao.create({
+            userId,
+            cash: 0,
+        }, { transaction });
+    }
+
     public async subtractUserCapital(
         userId: string,
         value: number,

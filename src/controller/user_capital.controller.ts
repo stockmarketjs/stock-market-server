@@ -14,7 +14,7 @@ export class UserCapitalController {
         private readonly userCapitalService: UserCapitalService,
     ) { }
 
-    @ApiOperation({ title: '获取单个员工的资金账户' })
+    @ApiOperation({ title: '获取单个用户的资金账户', description: '现在只有人民币账户一种' })
     @Get()
     @ApiResponse({ status: HttpStatus.OK, type: [UserCapital] })
     public async index(
@@ -22,6 +22,15 @@ export class UserCapitalController {
     ) {
         const res = await this.userCapitalService.findOneByUserIdOrThrow(userId);
         return [res];
+    }
+
+    @ApiOperation({ title: '单个用户的开户' })
+    @Post()
+    @ApiResponse({ status: HttpStatus.OK, type: UserCapital })
+    public async store(
+        @Param('userId') userId: string,
+    ) {
+        return this.userCapitalService.create(userId);
     }
 
 }
