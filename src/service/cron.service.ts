@@ -121,7 +121,7 @@ export class CronService extends BaseService {
             Logger.log('创建机器人开始');
             const transaction = await this.sequelize.transaction();
             try {
-                const user = await this.authService.register({
+                const user = await this.authService.registerRobot({
                     account: `robot_${$.getUuid()}`,
                     password: $.getUuid(),
                 }, transaction);

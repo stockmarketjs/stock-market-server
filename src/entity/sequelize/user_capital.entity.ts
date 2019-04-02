@@ -12,6 +12,7 @@ export class UserCapital extends Model<UserCapital> {
         type: DataType.UUID,
         primaryKey: true,
         defaultValue: DataType.UUIDV4,
+        allowNull: false,
     })
     readonly id: string;
 
@@ -19,12 +20,14 @@ export class UserCapital extends Model<UserCapital> {
     @Column({
         type: DataType.UUID,
         unique: true,
+        allowNull: false,
     })
     userId: string;
 
     @ApiModelProperty({ description: '持有资金' })
     @Column({
         type: DataType.BIGINT,
+        allowNull: false,
     })
     cash: number;
 

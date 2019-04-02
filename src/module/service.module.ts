@@ -14,6 +14,7 @@ import { ConfigModule } from '../provider/config/config.module';
 import { CronService } from '../service/cron.service';
 import { UserService } from '../service/user.service';
 import { JwtStrategy } from '../common/passport/jwt.strategy';
+import { RobotService } from '../service/robot.service';
 
 @Module({
     imports: [
@@ -31,7 +32,7 @@ import { JwtStrategy } from '../common/passport/jwt.strategy';
         AuthService, JwtStrategy,
         StockService, UserCapitalService, UserStockService, StockHistoryService,
         StockOrderService, UserStockOrderService, OrderService,
-        CronService, UserService,
+        CronService, UserService, RobotService,
     ],
     exports: [
         AuthService, PassportModule,

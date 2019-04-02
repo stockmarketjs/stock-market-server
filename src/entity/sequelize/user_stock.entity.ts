@@ -18,6 +18,7 @@ export class UserStock extends Model<UserStock> {
         type: DataType.UUID,
         primaryKey: true,
         defaultValue: DataType.UUIDV4,
+        allowNull: false,
     })
     readonly id: string;
 
@@ -25,6 +26,7 @@ export class UserStock extends Model<UserStock> {
     @Column({
         type: DataType.UUID,
         unique: true,
+        allowNull: false,
     })
     userId: string;
 
@@ -32,18 +34,21 @@ export class UserStock extends Model<UserStock> {
     @Column({
         type: DataType.UUID,
         unique: true,
+        allowNull: false,
     })
     stockId: string;
 
     @ApiModelProperty({ description: '陈本均价' })
     @Column({
         type: DataType.DECIMAL(20, 2),
+        allowNull: false,
     })
     costPrice: number;
 
     @ApiModelProperty({ description: '持仓数' })
     @Column({
         type: DataType.BIGINT,
+        allowNull: false,
     })
     amount: number;
 

@@ -7,6 +7,7 @@ import { Encrypt } from '../common/encrypt/encrypt';
 import { AuthRegisterVo, AuthLoginVo } from '../vo/auth.vo';
 import { $ } from '../common/util/function';
 import { UserDao } from '../dao/user.dao';
+import { ConstData } from '../constant/data.const';
 
 @Injectable()
 export class AuthService extends BaseService {
@@ -47,18 +48,34 @@ export class AuthService extends BaseService {
         if (countOfUsers > 0) throw new BadRequestException('账号已存在');
     }
 
-    public async register(
+    private async registerCore(
         params: AuthRegisterBodyDto,
+        isRobot: ConstData.Boolean = ConstData.Boolean.FALSE,
         transaction?: Transaction,
     ): Promise<AuthRegisterVo> {
         await this.validRegister(params);
         const id = $.getUuid();
         const user = await this.userDao.create({
             id,
+            isRobot,
             account: params.account,
             password: Encrypt.make([params.password, id]),
         }, { transaction });
         return { account: user.account, id: user.id };
+    }
+
+    public async register(
+        params: AuthRegisterBodyDto,
+        transaction?: Transaction,
+    ): Promise<AuthRegisterVo> {
+        return this.registerCore(params, ConstData.Boolean.FALSE, transaction);
+    }
+
+    public async registerRobot(
+        params: AuthRegisterBodyDto,
+        transaction?: Transaction,
+    ): Promise<AuthRegisterVo> {
+        return this.registerCore(params, ConstData.Boolean.TRUE, transaction);
     }
 
     public async findOneById(id: string) {

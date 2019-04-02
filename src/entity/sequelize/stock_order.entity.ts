@@ -13,6 +13,7 @@ export class StockOrder extends Model<StockOrder> {
         type: DataType.UUID,
         primaryKey: true,
         defaultValue: DataType.UUIDV4,
+        allowNull: false,
     })
     readonly id: string;
 
@@ -20,30 +21,35 @@ export class StockOrder extends Model<StockOrder> {
     @Column({
         type: DataType.UUID,
         unique: true,
+        allowNull: false,
     })
     stockId: string;
 
     @ApiModelProperty({ description: '成交小时分钟' })
     @Column({
         type: DataType.STRING(5),
+        allowNull: false,
     })
     minute: string;
 
     @ApiModelProperty({ description: '成交日期' })
     @Column({
         type: DataType.STRING(10),
+        allowNull: false,
     })
     date: string;
 
     @ApiModelProperty({ description: '成交价' })
     @Column({
         type: DataType.DECIMAL(20, 2),
+        allowNull: false,
     })
     price: number;
 
     @ApiModelProperty({ description: '成交数' })
     @Column({
         type: DataType.BIGINT,
+        allowNull: false,
     })
     hand: number;
 

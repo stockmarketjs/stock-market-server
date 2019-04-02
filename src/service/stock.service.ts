@@ -154,7 +154,7 @@ export class StockService extends BaseService {
         transaction?: Transaction,
     ) {
         await this.validEnoughCapital(operatorId, price, hand, transaction);
-        return this.trade(id, price, hand, operatorId, ConstData.TRADE_ACTION.BUY);
+        return this.trade(id, price, hand, operatorId, ConstData.TRADE_ACTION.BUY, undefined, transaction);
     }
 
     public async sold(
@@ -165,7 +165,7 @@ export class StockService extends BaseService {
         transaction?: Transaction,
     ) {
         await this.validEnoughStock(operatorId, id, hand, transaction);
-        return this.trade(id, price, hand, operatorId, ConstData.TRADE_ACTION.SOLD);
+        return this.trade(id, price, hand, operatorId, ConstData.TRADE_ACTION.SOLD, undefined, transaction);
     }
 
     public async trade(
@@ -175,6 +175,7 @@ export class StockService extends BaseService {
         operatorId: string,
         type: ConstData.TRADE_ACTION,
         mode: ConstData.TRADE_MODE = ConstData.TRADE_MODE.LIMIT,
+        transaction?: Transaction,
     ) {
         return this.userStockOrderService.create({
             stockId,
@@ -184,7 +185,7 @@ export class StockService extends BaseService {
             userId: operatorId,
             type,
             state: ConstData.ORDER_STATE.READY,
-        });
+        }, { transaction });
     }
 
     public async validEnoughCapital(

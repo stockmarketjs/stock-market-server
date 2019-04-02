@@ -13,6 +13,7 @@ export class StockCapital extends Model<StockCapital> {
         type: DataType.UUID,
         primaryKey: true,
         defaultValue: DataType.UUIDV4,
+        allowNull: false,
     })
     readonly id: string;
 
@@ -20,12 +21,14 @@ export class StockCapital extends Model<StockCapital> {
     @Column({
         type: DataType.UUID,
         unique: true,
+        allowNull: false,
     })
     stockId: string;
 
     @ApiModelProperty({ description: '总股本' })
     @Column({
         type: DataType.BIGINT,
+        allowNull: false,
     })
     generalCapital: number;
 

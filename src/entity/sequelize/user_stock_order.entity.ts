@@ -19,48 +19,56 @@ export class UserStockOrder extends Model<UserStockOrder> {
         type: DataType.UUID,
         primaryKey: true,
         defaultValue: DataType.UUIDV4,
+        allowNull: false,
     })
     readonly id: string;
 
     @ApiModelProperty({ description: '股票ID' })
     @Column({
         type: DataType.UUID,
+        allowNull: false,
     })
     stockId: string;
 
     @ApiModelProperty({ description: '用户ID' })
     @Column({
         type: DataType.UUID,
+        allowNull: false,
     })
     userId: string;
 
     @ApiModelProperty({ description: '订单状态', enum: ConstData.ORDER_STATE })
     @Column({
         type: DataType.TINYINT,
+        allowNull: false,
     })
     state: ConstData.ORDER_STATE;
 
     @ApiModelProperty({ description: '订单类型', enum: ConstData.TRADE_ACTION })
     @Column({
         type: DataType.TINYINT,
+        allowNull: false,
     })
     type: ConstData.TRADE_ACTION;
 
     @ApiModelProperty({ description: '订单模式', enum: ConstData.TRADE_MODE })
     @Column({
         type: DataType.TINYINT,
+        allowNull: false,
     })
     mode: ConstData.TRADE_MODE;
 
     @ApiModelProperty({ description: '价格' })
     @Column({
         type: DataType.DECIMAL(20, 2),
+        allowNull: false,
     })
     price: number;
 
     @ApiModelProperty({ description: '手数' })
     @Column({
         type: DataType.BIGINT,
+        allowNull: false,
     })
     hand: number;
 }
