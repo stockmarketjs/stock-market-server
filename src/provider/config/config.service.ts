@@ -1,6 +1,7 @@
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
 import * as path from 'path';
+import { SequelizeOptions } from 'sequelize-typescript';
 
 export class ConfigService {
 
@@ -23,14 +24,7 @@ export class ConfigService {
         return this.envConfig.SECURITY_PRIVATE_KEY;
     }
 
-    get dbMysql(): {
-        dialect: 'mysql',
-        host: string,
-        port: number,
-        username: string,
-        password: string,
-        database: string,
-    } {
+    get dbMysql(): SequelizeOptions {
         return {
             dialect: 'mysql',
             host: this.envConfig.DB_MYSQL_HOST,
@@ -38,6 +32,8 @@ export class ConfigService {
             username: this.envConfig.DB_MYSQL_USERNAME,
             password: this.envConfig.DB_MYSQL_PASSWORD,
             database: this.envConfig.DB_MYSQL_DATABASE,
+            logging: false,
+            timezone: '+08:00',
         };
     }
 
