@@ -4,6 +4,7 @@ import { Transaction, Op } from 'sequelize';
 import * as _ from 'lodash';
 import { StockHistoryDao } from '../dao/stock_history.dao';
 import { Moment } from '../common/util/moment';
+import { StockHistoryCreateBodyDto } from '../dto/stock/stock_history.dto';
 
 @Injectable()
 export class StockHistoryService extends BaseService {
@@ -12,6 +13,13 @@ export class StockHistoryService extends BaseService {
         private readonly stockHistoryDao: StockHistoryDao,
     ) {
         super();
+    }
+
+    public async create(
+        paarms: StockHistoryCreateBodyDto,
+        transaction?: Transaction,
+    ) {
+        return this.stockHistoryDao.create(paarms, { transaction });
     }
 
     public async findAllByPeriod(stockId: string, begin?: string, end?: string) {

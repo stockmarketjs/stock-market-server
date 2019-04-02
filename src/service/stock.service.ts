@@ -58,7 +58,45 @@ export class StockService extends BaseService {
         return stocks as StockFindAllDto[];
     }
 
-    public async update(
+    public async startQuotation(
+        id: string,
+        transaction?: Transaction,
+    ) {
+        const stock = await this.findOneById(id, transaction);
+        if (!stock) throw new NotFoundException();
+
+        await this.stockDao.update({
+            change: 0,
+            startPrice: stock.currentPrice,
+            endPrice: 0,
+            highestPrice: stock.currentPrice,
+            lowestPrice: stock.currentPrice,
+        }, {
+                where: {
+                    id,
+                },
+                transaction,
+            });
+    }
+
+    public async endQuotation(
+        id: string,
+        transaction?: Transaction,
+    ) {
+        const stock = await this.findOneById(id, transaction);
+        if (!stock) throw new NotFoundException();
+
+        await this.stockDao.update({
+            endPrice: stock.currentPrice,
+        }, {
+                where: {
+                    id,
+                },
+                transaction,
+            });
+    }
+
+    public async updateQuotation(
         id: string,
         params: StockUpdateDto,
         transaction?: Transaction,
@@ -92,19 +130,16 @@ export class StockService extends BaseService {
     }
 
     public validInTradeTime(dateTime: string = Moment().toISOString()) {
-        const tradePeriods = <{ begin: string, end: string }[]>[
-            {
-                begin: '09:30',
-                end: '13:00',
-            },
-            {
-                begin: '13:10',
-                end: '23:50',
-            },
-        ];
+        const tradePeriods = <{ begin: string, end: string }[]>ConstData.TRADE_PERIODS;
         for (const tradePeriod of tradePeriods) {
-            if (Moment(tradePeriod.begin, 'HH:mm').unix() <= Moment(dateTime).unix() &&
-                Moment(tradePeriod.end, 'HH:mm').unix() >= Moment(dateTime).unix()) {
+            const begin = Moment(tradePeriod.begin, 'HH:mm');
+            let end = Moment(tradePeriod.end, 'HH:mm');
+            if (tradePeriod.begin > tradePeriod.end) {
+                end = Moment(tradePeriod.end, 'HH:mm').add(1, 'days');
+            }
+
+            if (begin.unix() <= Moment(dateTime).unix() &&
+                end.unix() >= Moment(dateTime).unix()) {
                 return true;
             }
         }

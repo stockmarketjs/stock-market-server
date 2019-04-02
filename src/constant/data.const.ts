@@ -4,7 +4,7 @@ export namespace ConstData {
         // 上海证券交易所
         SH = 'sh',
         // 深圳证券交易所
-        SZ = 'sz'
+        SZ = 'sz',
     }
 
     export enum TRADE_ACTION {
@@ -20,7 +20,7 @@ export namespace ConstData {
         // 交易成功
         SUCCESS = 2,
         // 撮合失败
-        FAIL = 3
+        FAIL = 3,
     }
 
     /**
@@ -39,5 +39,16 @@ export namespace ConstData {
          */
         MARKET = 1,
     }
+
+    export const TRADE_PERIODS = [
+        {
+            begin: '09:30',
+            end: '11:30',
+        },
+        {
+            begin: '12:00',
+            end: '23:00',
+        },
+    ];
 
 }

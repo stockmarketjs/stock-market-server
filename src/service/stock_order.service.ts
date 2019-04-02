@@ -96,16 +96,7 @@ export class StockOrderService extends BaseService {
         /**
          * 获取允许交易的时间
          */
-        const periods = <{ begin: string, end: string }[]>[
-            {
-                begin: '09:30',
-                end: '13:00',
-            },
-            {
-                begin: '13:10',
-                end: '23:50',
-            },
-        ];
+        const periods = <{ begin: string, end: string }[]>ConstData.TRADE_PERIODS;
         // 格式化交易时间段
         const tradePeriods = _.map(periods, tradePeriod => {
             const endMarket = Moment(tradePeriod.end, 'HH:mm');
@@ -156,8 +147,8 @@ export class StockOrderService extends BaseService {
         const endObj = Moment(end);
 
         // 初始化, 先放第一个
-        const init_minute = beginObj.format('HH:mm');
-        res.push(init_minute);
+        const initMinute = beginObj.format('HH:mm');
+        res.push(initMinute);
 
         // 累加1分钟
         while (beginObj.unix() < endObj.unix()) {

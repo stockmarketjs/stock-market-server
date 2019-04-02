@@ -88,7 +88,7 @@ export class OrderService {
         },
         transaction: Transaction,
     ) {
-        return this.stockService.update(trade.stockId, {
+        return this.stockService.updateQuotation(trade.stockId, {
             finalPrice: trade.price,
             finalHand: trade.hand,
         }, transaction);
