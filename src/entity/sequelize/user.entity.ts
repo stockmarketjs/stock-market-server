@@ -38,12 +38,11 @@ export class User extends Model<User> {
     })
     readonly password: string;
 
-    @ApiModelProperty({ description: '是否是机器人', required: false, default: ConstData.Boolean.FALSE })
+    @ApiModelProperty({ description: '是否是机器人', required: true })
     @Column({
         type: DataType.TINYINT,
-        defaultValue: ConstData.Boolean.FALSE,
         allowNull: false,
         field: 'is_robot',
     })
-    readonly isRobot: ConstData.Boolean = ConstData.Boolean.FALSE;
+    readonly isRobot: ConstData.Boolean;
 }
