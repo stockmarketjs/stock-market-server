@@ -185,7 +185,7 @@ export class StockService extends BaseService {
             userId: operatorId,
             type,
             state: ConstData.ORDER_STATE.READY,
-        }, { transaction });
+        }, transaction);
     }
 
     public async validEnoughCapital(

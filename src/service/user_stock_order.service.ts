@@ -17,8 +17,9 @@ export class UserStockOrderService extends BaseService {
 
     public async create(
         params: UserStockOrderCreateBodyDto,
+        transaction?: Transaction,
     ) {
-        return this.userStockOrderDao.create(params);
+        return this.userStockOrderDao.create(params, { transaction });
     }
 
     public async findAllReadyByStockIdWithLock(

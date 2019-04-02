@@ -29,33 +29,56 @@ export class RobotService extends BaseService {
         super();
     }
 
-    // private async randomStrategy(
-    //     operatorId: string,
-    // ) {
-    //     const boolean = await this.random();
-    //     if (!boolean) return;
+    private async randomStrategy(
+        operatorId: string,
+    ) {
+        if (await this.random()) {
+            await this.buyRandomStock(operatorId);
+        }
+        if (await this.random()) {
+            await this.soldRandomStock(operatorId);
+        }
+    }
 
-    //     await this.buyRandomStock(operatorId);
-    // }
+    private async random(): Promise<boolean> {
+        if (_.random(0, 5) !== 2) return false;
+        return true;
+    }
 
-    // private async random(): Promise<boolean> {
-    //     if (_.random(0, 5) !== 2) return false;
-    //     return true;
-    // }
+    private async buyRandomStock(
+        operatorId: string,
+    ) {
+        const stocks = await this.stockService.findAll();
+        const stock = _.shuffle(stocks).pop();
+        if (!stock) return false;
 
-    // private async buyRandomStock(
-    //     operatorId: string,
-    // ) {
-    //     const stocks = await this.stockService.findAll();
-    //     const stock = _.shuffle(stocks).pop();
-    //     if (!stock) return false;
+        const hand = _.random(1, 100);
+        await this.stockService.buy(stock.id, stock.currentPrice, hand, operatorId);
+    }
 
-    //     const hand = _.random(1, 100);
-    //     await this.stockService.buy(stock.id, stock.currentPrice, hand, operatorId);
-    // }
+    private async soldRandomStock(
+        operatorId: string,
+    ) {
+        const stocks = await this.stockService.findAll();
+        const stock = _.shuffle(stocks).pop();
+        if (!stock) return false;
 
-    // public async dispatchStrategy() {
+        const hand = _.random(1, 100);
+        await this.stockService.sold(stock.id, stock.currentPrice, hand, operatorId);
+    }
 
-    // }
+    public async dispatchStrategy() {
+        const transaction = await this.sequelize.transaction();
+        try {
+            const robots = await this.userService.findAllRobot();
+            for (const robot of robots) {
+
+            }
+            await transaction.commit();
+        } catch (e) {
+            console.log(e);
+            await transaction.rollback();
+        }
+    }
 
 }

@@ -3,6 +3,7 @@ import { BaseService } from './base.service';
 import { Transaction } from 'sequelize/types';
 import { UserDao } from '../dao/user.dao';
 import { User } from '../entity/sequelize/user.entity';
+import { ConstData } from '../constant/data.const';
 
 @Injectable()
 export class UserService extends BaseService {
@@ -17,6 +18,17 @@ export class UserService extends BaseService {
         transaction?: Transaction,
     ): Promise<User[]> {
         return this.userDao.findAll({ transaction });
+    }
+
+    public async findAllRobot(
+        transaction?: Transaction,
+    ): Promise<User[]> {
+        return this.userDao.findAll({
+            where: {
+                isRobot: ConstData.Boolean.TRUE,
+            },
+            transaction,
+        });
     }
 
 }
