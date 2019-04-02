@@ -22,6 +22,7 @@ export class StockOrder extends Model<StockOrder> {
         type: DataType.UUID,
         unique: true,
         allowNull: false,
+        field: 'stock_id',
     })
     stockId: string;
 

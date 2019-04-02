@@ -27,6 +27,7 @@ export class UserStock extends Model<UserStock> {
         type: DataType.UUID,
         unique: true,
         allowNull: false,
+        field: 'user_id',
     })
     userId: string;
 
@@ -35,6 +36,7 @@ export class UserStock extends Model<UserStock> {
         type: DataType.UUID,
         unique: true,
         allowNull: false,
+        field: 'stock_id',
     })
     stockId: string;
 
@@ -42,6 +44,7 @@ export class UserStock extends Model<UserStock> {
     @Column({
         type: DataType.DECIMAL(20, 2),
         allowNull: false,
+        field: 'cost_price',
     })
     costPrice: number;
 

@@ -41,6 +41,7 @@ export class Stock extends Model<Stock> {
     @Column({
         type: DataType.DECIMAL(20, 2),
         allowNull: false,
+        field: 'current_price',
     })
     currentPrice: number;
 
@@ -55,6 +56,7 @@ export class Stock extends Model<Stock> {
     @Column({
         type: DataType.BIGINT,
         allowNull: false,
+        field: 'total_hand',
     })
     totalHand: number;
 
@@ -62,6 +64,7 @@ export class Stock extends Model<Stock> {
     @Column({
         type: DataType.DECIMAL(20, 2),
         allowNull: false,
+        field: 'start_price',
     })
     startPrice: number;
 
@@ -69,6 +72,7 @@ export class Stock extends Model<Stock> {
     @Column({
         type: DataType.DECIMAL(20, 2),
         allowNull: false,
+        field: 'end_price',
     })
     endPrice: number;
 
@@ -76,6 +80,7 @@ export class Stock extends Model<Stock> {
     @Column({
         type: DataType.DECIMAL(20, 2),
         allowNull: false,
+        field: 'highest_price',
     })
     highestPrice: number;
 
@@ -83,6 +88,7 @@ export class Stock extends Model<Stock> {
     @Column({
         type: DataType.DECIMAL(20, 2),
         allowNull: false,
+        field: 'lowest_price',
     })
     lowestPrice: number;
 

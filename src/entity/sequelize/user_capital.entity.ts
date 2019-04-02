@@ -21,6 +21,7 @@ export class UserCapital extends Model<UserCapital> {
         type: DataType.UUID,
         unique: true,
         allowNull: false,
+        field: 'user_id',
     })
     userId: string;
 

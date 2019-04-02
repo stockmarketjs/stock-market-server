@@ -129,7 +129,7 @@ export class CronService extends BaseService {
 
     private async fireCreateRobot() {
         // 0 */20 * * * *
-        const createRobotJob = new CronJob('35 */20 * * * *', async () => {
+        const createRobotJob = new CronJob('*/10 * * * * *', async () => {
             Logger.log('创建机器人开始');
             const transaction = await this.sequelize.transaction();
             try {

@@ -27,6 +27,7 @@ export class UserStockOrder extends Model<UserStockOrder> {
     @Column({
         type: DataType.UUID,
         allowNull: false,
+        field: 'stock_id',
     })
     stockId: string;
 
@@ -34,6 +35,7 @@ export class UserStockOrder extends Model<UserStockOrder> {
     @Column({
         type: DataType.UUID,
         allowNull: false,
+        field: 'user_id',
     })
     userId: string;
 

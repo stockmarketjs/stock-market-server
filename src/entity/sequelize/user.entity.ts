@@ -43,6 +43,7 @@ export class User extends Model<User> {
         type: DataType.TINYINT,
         defaultValue: ConstData.Boolean.FALSE,
         allowNull: false,
+        field: 'is_robot',
     })
     readonly isRobot: ConstData.Boolean = ConstData.Boolean.FALSE;
 }

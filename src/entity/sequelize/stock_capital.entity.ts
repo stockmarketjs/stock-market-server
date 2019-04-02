@@ -22,6 +22,7 @@ export class StockCapital extends Model<StockCapital> {
         type: DataType.UUID,
         unique: true,
         allowNull: false,
+        field: 'stock_id',
     })
     stockId: string;
 
@@ -29,6 +30,7 @@ export class StockCapital extends Model<StockCapital> {
     @Column({
         type: DataType.BIGINT,
         allowNull: false,
+        field: 'general_capital',
     })
     generalCapital: number;
 

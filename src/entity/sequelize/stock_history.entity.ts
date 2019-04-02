@@ -28,6 +28,7 @@ export class StockHistory extends Model<StockHistory> {
         type: DataType.UUID,
         unique: true,
         allowNull: false,
+        field: 'stock_id',
     })
     stockId: string;
 
@@ -55,6 +56,7 @@ export class StockHistory extends Model<StockHistory> {
     @Column({
         type: DataType.DECIMAL(20, 2),
         allowNull: false,
+        field: 'current_price',
     })
     currentPrice: number;
 
@@ -69,6 +71,7 @@ export class StockHistory extends Model<StockHistory> {
     @Column({
         type: DataType.BIGINT,
         allowNull: false,
+        field: 'total_hand',
     })
     totalHand: number;
 
@@ -76,6 +79,7 @@ export class StockHistory extends Model<StockHistory> {
     @Column({
         type: DataType.DECIMAL(20, 2),
         allowNull: false,
+        field: 'start_price',
     })
     startPrice: number;
 
@@ -83,6 +87,7 @@ export class StockHistory extends Model<StockHistory> {
     @Column({
         type: DataType.DECIMAL(20, 2),
         allowNull: false,
+        field: 'end_price',
     })
     endPrice: number;
 
@@ -90,6 +95,7 @@ export class StockHistory extends Model<StockHistory> {
     @Column({
         type: DataType.DECIMAL(20, 2),
         allowNull: false,
+        field: 'highest_price',
     })
     highestPrice: number;
 
@@ -97,6 +103,7 @@ export class StockHistory extends Model<StockHistory> {
     @Column({
         type: DataType.DECIMAL(20, 2),
         allowNull: false,
+        field: 'lowest_price',
     })
     lowestPrice: number;
 

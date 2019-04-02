@@ -50,7 +50,7 @@ export class AuthService extends BaseService {
 
     private async registerCore(
         params: AuthRegisterBodyDto,
-        isRobot: ConstData.Boolean = ConstData.Boolean.FALSE,
+        isRobot: ConstData.Boolean,
         transaction?: Transaction,
     ): Promise<AuthRegisterVo> {
         await this.validRegister(params);
