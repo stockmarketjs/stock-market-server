@@ -3,6 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiUseTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { StockOrderService } from '../service/stock_order.service';
 import { StockOrder } from '../entity/sequelize/stock_order.entity';
+import { StockOrderFindAllSoldShift, StockOrderFindAllBuyShift } from '../vo/stock_order.vo';
 
 @ApiBearerAuth()
 @ApiUseTags('Stock - Order')
@@ -20,6 +21,24 @@ export class StockOrderController {
         @Param('stockId') stockId: string,
     ) {
         return this.stockOrderService.findAllOfDate(stockId);
+    }
+
+    @ApiOperation({ title: '获取单个股票的买档' })
+    @Get('buy_shifts')
+    @ApiResponse({ status: HttpStatus.OK, type: [StockOrderFindAllBuyShift] })
+    public async getBuyShifts(
+        @Param('stockId') stockId: string,
+    ) {
+        return this.stockOrderService.findAllBuyShift(stockId);
+    }
+
+    @ApiOperation({ title: '获取单个股票的卖档' })
+    @Get('sold_shifts')
+    @ApiResponse({ status: HttpStatus.OK, type: [StockOrderFindAllSoldShift] })
+    public async getSoldShifts(
+        @Param('stockId') stockId: string,
+    ) {
+        return this.stockOrderService.findAllSoldShift(stockId);
     }
 
 }

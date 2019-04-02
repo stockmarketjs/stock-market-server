@@ -1,4 +1,4 @@
-import { IsDefined, IsString, IsInt } from 'class-validator';
+import { IsDefined, IsString, IsInt, IsNumber } from 'class-validator';
 import { ApiModelProperty } from '@nestjs/swagger';
 
 export class StockOrderCreateBodyDto {
@@ -17,11 +17,11 @@ export class StockOrderCreateBodyDto {
     minute: string;
 
     @ApiModelProperty({ description: '成交价' })
-    @IsDefined() @IsInt()
+    @IsDefined() @IsNumber()
 
     price: number;
 
     @ApiModelProperty({ description: '成交数' })
-    @IsDefined() @IsInt()
+    @IsDefined() @IsNumber()
     hand: number;
 }

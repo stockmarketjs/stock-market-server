@@ -7,14 +7,64 @@ import { StockOrderCreateBodyDto } from '../dto/stock_order/stock_order.dto';
 import { Moment } from '../common/util/moment';
 import { StockOrder } from '../entity/sequelize/stock_order.entity';
 import { $ } from '../common/util/function';
+import { UserStockOrderDao } from '../dao/user_stock_order.dao';
+import { ConstData } from '../constant/data.const';
+import { StockOrderFindAllBuyShift, StockOrderFindAllSoldShift } from '../vo/stock_order.vo';
 
 @Injectable()
 export class StockOrderService extends BaseService {
 
     constructor(
         private readonly stockOrderDao: StockOrderDao,
+        private readonly userStockOrderDao: UserStockOrderDao,
     ) {
         super();
+    }
+
+    private async findAllShift(
+        stockId: string,
+        type: ConstData.TRADE_ACTION,
+        transaction?: Transaction,
+    ): Promise<StockOrderFindAllBuyShift[]> {
+        const userStockOrdersOfBuy = await this.userStockOrderDao.findAll({
+            where: {
+                stockId,
+                state: ConstData.ORDER_STATE.READY,
+                type,
+            },
+            order: [['price', type === ConstData.TRADE_ACTION.BUY ? 'DESC' : 'ASC']],
+            transaction,
+        });
+        const groupOfBuy = _.groupBy(userStockOrdersOfBuy, 'price');
+        const keys = _.keys(groupOfBuy);
+        const res: StockOrderFindAllBuyShift[] = [];
+        // 查看档数, 限定为5档
+        const limitShift = 5;
+        for (const key of keys) {
+            if (keys.indexOf(key) === limitShift - 1) break;
+
+            const userStockOrdersOfShift = groupOfBuy[key];
+            res.push({
+                shift: 1,
+                price: Number(key),
+                hand: _.sumBy(userStockOrdersOfShift, 'hand'),
+            });
+        }
+        return res;
+    }
+
+    public async findAllSoldShift(
+        stockId: string,
+        transaction?: Transaction,
+    ): Promise<StockOrderFindAllSoldShift[]> {
+        return this.findAllShift(stockId, ConstData.TRADE_ACTION.SOLD, transaction);
+    }
+
+    public async findAllBuyShift(
+        stockId: string,
+        transaction?: Transaction,
+    ): Promise<StockOrderFindAllBuyShift[]> {
+        return this.findAllShift(stockId, ConstData.TRADE_ACTION.BUY, transaction);
     }
 
     public async create(

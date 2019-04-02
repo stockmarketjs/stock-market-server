@@ -30,7 +30,7 @@ export class CronService extends BaseService {
 
     private async fireGrantCapital() {
         // 0 0 1 * * *
-        const createRobotJob = new CronJob('54 * * * * *', async () => {
+        const createRobotJob = new CronJob('54 */30 * * * *', async () => {
             Logger.log('发钱开始');
             const transaction = await this.sequelize.transaction();
             try {
@@ -51,7 +51,7 @@ export class CronService extends BaseService {
 
     private async fireCreateRobot() {
         // 0 */20 * * * *
-        const createRobotJob = new CronJob('35 * * * * *', async () => {
+        const createRobotJob = new CronJob('35 */20 * * * *', async () => {
             Logger.log('创建机器人开始');
             const transaction = await this.sequelize.transaction();
             try {
@@ -71,7 +71,7 @@ export class CronService extends BaseService {
     }
 
     private async fireHandle() {
-        const handleJob = new CronJob('11 * * * * *', async () => {
+        const handleJob = new CronJob('10 * * * * *', async () => {
             Logger.log('核算开始');
             await this.orderService.handle();
             Logger.log('核算结束');
