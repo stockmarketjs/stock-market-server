@@ -12,6 +12,7 @@ import { StockHistoryService } from './stock_history.service';
 import { StockService } from './stock.service';
 import { Moment } from '../common/util/moment';
 import { ConstData } from '../constant/data.const';
+import { RobotService } from './robot.service';
 
 @Injectable()
 export class CronService extends BaseService {
@@ -24,6 +25,7 @@ export class CronService extends BaseService {
         private readonly userService: UserService,
         private readonly stockHistoryService: StockHistoryService,
         private readonly stockService: StockService,
+        private readonly robotService: RobotService,
     ) {
         super();
     }
@@ -34,6 +36,16 @@ export class CronService extends BaseService {
         await this.fireGrantCapital();
         await this.fireEndQuotation();
         await this.fireStartQuotation();
+        await this.fireRobotTrade();
+    }
+
+    private async fireRobotTrade() {
+        const job = new CronJob('25 * * * * *', async () => {
+            Logger.log('机器人交易开始');
+            await this.robotService.dispatchStrategy();
+            Logger.log('机器人交易结束');
+        });
+        job.start();
     }
 
     private async fireStartQuotation() {

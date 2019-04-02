@@ -13,6 +13,7 @@ import { StockService } from './stock.service';
 import { Moment } from '../common/util/moment';
 import { ConstData } from '../constant/data.const';
 import * as _ from 'lodash';
+import { Transaction } from 'sequelize/types';
 
 @Injectable()
 export class RobotService extends BaseService {
@@ -31,12 +32,13 @@ export class RobotService extends BaseService {
 
     private async randomStrategy(
         operatorId: string,
+        transaction?: Transaction,
     ) {
         if (await this.random()) {
-            await this.buyRandomStock(operatorId);
+            await this.buyRandomStock(operatorId, transaction);
         }
         if (await this.random()) {
-            await this.soldRandomStock(operatorId);
+            await this.soldRandomStock(operatorId, transaction);
         }
     }
 
@@ -47,32 +49,36 @@ export class RobotService extends BaseService {
 
     private async buyRandomStock(
         operatorId: string,
+        transaction?: Transaction,
     ) {
-        const stocks = await this.stockService.findAll();
+        const stocks = await this.stockService.findAll(transaction);
         const stock = _.shuffle(stocks).pop();
         if (!stock) return false;
 
         const hand = _.random(1, 100);
-        await this.stockService.buy(stock.id, stock.currentPrice, hand, operatorId);
+        await this.stockService.buy(stock.id, stock.currentPrice, hand, operatorId, transaction);
     }
 
     private async soldRandomStock(
         operatorId: string,
+        transaction?: Transaction,
     ) {
-        const stocks = await this.stockService.findAll();
+        const stocks = await this.stockService.findAll(transaction);
         const stock = _.shuffle(stocks).pop();
         if (!stock) return false;
 
         const hand = _.random(1, 100);
-        await this.stockService.sold(stock.id, stock.currentPrice, hand, operatorId);
+        await this.stockService.sold(stock.id, stock.currentPrice, hand, operatorId, transaction);
     }
 
     public async dispatchStrategy() {
         const transaction = await this.sequelize.transaction();
         try {
-            const robots = await this.userService.findAllRobot();
+            const robots = await this.userService.findAllRobot(transaction);
             for (const robot of robots) {
-
+                try {
+                    await this.randomStrategy(robot.id, transaction);
+                } catch{ }
             }
             await transaction.commit();
         } catch (e) {
