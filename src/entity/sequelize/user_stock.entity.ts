@@ -45,6 +45,10 @@ export class UserStock extends Model<UserStock> {
         type: DataType.DECIMAL(20, 2),
         allowNull: false,
         field: 'cost_price',
+        get() {
+            const val: string = this.getDataValue('cost_price');
+            return val !== undefined ? Number(val) : undefined;
+        },
     })
     costPrice: number;
 

@@ -42,6 +42,10 @@ export class Stock extends Model<Stock> {
         type: DataType.DECIMAL(20, 2),
         allowNull: false,
         field: 'current_price',
+        get() {
+            const val: string = this.getDataValue('current_price');
+            return val !== undefined ? Number(val) : undefined;
+        },
     })
     currentPrice: number;
 
@@ -65,6 +69,10 @@ export class Stock extends Model<Stock> {
         type: DataType.DECIMAL(20, 2),
         allowNull: false,
         field: 'start_price',
+        get() {
+            const val: string = this.getDataValue('start_price');
+            return val !== undefined ? Number(val) : undefined;
+        },
     })
     startPrice: number;
 
@@ -73,6 +81,10 @@ export class Stock extends Model<Stock> {
         type: DataType.DECIMAL(20, 2),
         allowNull: false,
         field: 'end_price',
+        get() {
+            const val: string = this.getDataValue('end_price');
+            return val !== undefined ? Number(val) : undefined;
+        },
     })
     endPrice: number;
 
@@ -81,6 +93,10 @@ export class Stock extends Model<Stock> {
         type: DataType.DECIMAL(20, 2),
         allowNull: false,
         field: 'highest_price',
+        get() {
+            const val: string = this.getDataValue('highest_price');
+            return val !== undefined ? Number(val) : undefined;
+        },
     })
     highestPrice: number;
 
@@ -89,6 +105,10 @@ export class Stock extends Model<Stock> {
         type: DataType.DECIMAL(20, 2),
         allowNull: false,
         field: 'lowest_price',
+        get() {
+            const val: string = this.getDataValue('lowest_price');
+            return val !== undefined ? Number(val) : undefined;
+        },
     })
     lowestPrice: number;
 

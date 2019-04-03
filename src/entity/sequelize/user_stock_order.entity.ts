@@ -64,6 +64,10 @@ export class UserStockOrder extends Model<UserStockOrder> {
     @Column({
         type: DataType.DECIMAL(20, 2),
         allowNull: false,
+        get() {
+            const val: string = this.getDataValue('price');
+            return val !== undefined ? Number(val) : undefined;
+        },
     })
     price: number;
 
