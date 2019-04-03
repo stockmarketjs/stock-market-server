@@ -14,6 +14,7 @@ import { Moment } from '../common/util/moment';
 import { ConstData } from '../constant/data.const';
 import * as _ from 'lodash';
 import { Transaction } from 'sequelize/types';
+import { Calc } from '../common/util/calc';
 
 @Injectable()
 export class RobotService extends BaseService {
@@ -56,7 +57,8 @@ export class RobotService extends BaseService {
         if (!stock) return false;
 
         const hand = _.random(1, 100);
-        await this.stockService.buy(stock.id, stock.currentPrice, hand, operatorId, transaction);
+        const price = _.random(Calc.sub(stock.currentPrice, 0.05), Calc.add(stock.currentPrice, 0.05));
+        await this.stockService.buy(stock.id, price, hand, operatorId, transaction);
     }
 
     private async soldRandomStock(
@@ -68,7 +70,8 @@ export class RobotService extends BaseService {
         if (!stock) return false;
 
         const hand = _.random(1, 100);
-        await this.stockService.sold(stock.id, stock.currentPrice, hand, operatorId, transaction);
+        const price = _.random(Calc.sub(stock.currentPrice, 0.05), Calc.add(stock.currentPrice, 0.05));
+        await this.stockService.sold(stock.id, price, hand, operatorId, transaction);
     }
 
     public async dispatchStrategy() {
