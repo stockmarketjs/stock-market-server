@@ -58,7 +58,7 @@ export class StockHistory extends Model<StockHistory> {
         allowNull: false,
         field: 'current_price',
         get() {
-            const val: string = this.getDataValue('current_price');
+            const val: string = this.getDataValue('currentPrice');
             return val !== undefined ? Number(val) : undefined;
         },
     })
@@ -85,7 +85,7 @@ export class StockHistory extends Model<StockHistory> {
         allowNull: false,
         field: 'start_price',
         get() {
-            const val: string = this.getDataValue('start_price');
+            const val: string = this.getDataValue('startPrice');
             return val !== undefined ? Number(val) : undefined;
         },
     })
@@ -97,7 +97,7 @@ export class StockHistory extends Model<StockHistory> {
         allowNull: false,
         field: 'end_price',
         get() {
-            const val: string = this.getDataValue('end_price');
+            const val: string = this.getDataValue('endPrice');
             return val !== undefined ? Number(val) : undefined;
         },
     })
@@ -109,7 +109,7 @@ export class StockHistory extends Model<StockHistory> {
         allowNull: false,
         field: 'highest_price',
         get() {
-            const val: string = this.getDataValue('highest_price');
+            const val: string = this.getDataValue('highestPrice');
             return val !== undefined ? Number(val) : undefined;
         },
     })
@@ -121,7 +121,7 @@ export class StockHistory extends Model<StockHistory> {
         allowNull: false,
         field: 'lowest_price',
         get() {
-            const val: string = this.getDataValue('lowest_price');
+            const val: string = this.getDataValue('lowestPrice');
             return val !== undefined ? Number(val) : undefined;
         },
     })

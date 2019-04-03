@@ -38,13 +38,13 @@ export class UserStock extends Model<UserStock> {
     })
     stockId: string;
 
-    @ApiModelProperty({ description: '陈本均价' })
+    @ApiModelProperty({ description: '成本均价' })
     @Column({
         type: DataType.DECIMAL(20, 2),
         allowNull: false,
         field: 'cost_price',
         get() {
-            const val: string = this.getDataValue('cost_price');
+            const val: string = this.getDataValue('costPrice');
             return val !== undefined ? Number(val) : undefined;
         },
     })

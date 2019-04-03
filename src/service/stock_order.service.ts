@@ -26,21 +26,21 @@ export class StockOrderService extends BaseService {
         type: ConstData.TRADE_ACTION,
         transaction?: Transaction,
     ): Promise<StockOrderFindAllBuyShift[]> {
-        const userStockOrdersOfBuy = await this.userStockOrderDao.findAll({
+        const userStockOrders = await this.userStockOrderDao.findAll({
             where: {
                 stockId,
                 state: ConstData.ORDER_STATE.READY,
                 type,
             },
-            order: [['price', type === ConstData.TRADE_ACTION.BUY ? 'DESC' : 'ASC']],
             transaction,
         });
-        const groupOfBuy = _.groupBy(userStockOrdersOfBuy, 'price');
+        const groupOfBuy = _.groupBy(userStockOrders, 'price');
         const keys = _.keys(groupOfBuy);
+        const keysSorted = keys.sort((a, b) => Number(a) - Number(b));
         const res: StockOrderFindAllBuyShift[] = [];
         // 查看档数, 限定为5档
         const limitShift = 5;
-        for (const key of keys) {
+        for (const key of type === ConstData.TRADE_ACTION.BUY ? keysSorted.reverse() : keysSorted) {
             if (keys.indexOf(key) === limitShift - 1) break;
 
             const userStockOrdersOfShift = groupOfBuy[key];
