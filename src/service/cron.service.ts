@@ -40,7 +40,7 @@ export class CronService extends BaseService {
     }
 
     private async fireRobotTrade() {
-        const job = new CronJob('25 * * * * *', async () => {
+        const job = new CronJob('*/20 * * * * *', async () => {
             Logger.log('机器人交易开始');
             await this.robotService.dispatchStrategy();
             Logger.log('机器人交易结束');

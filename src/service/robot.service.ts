@@ -44,7 +44,7 @@ export class RobotService extends BaseService {
     }
 
     private async random(): Promise<boolean> {
-        if (_.random(0, 5) !== 2) return false;
+        if (_.random(0, 3) !== 2) return false;
         return true;
     }
 
