@@ -152,6 +152,7 @@ export class StockService extends BaseService {
         operatorId: string,
         transaction?: Transaction,
     ) {
+        this.validInTradeTime();
         await this.validEnoughCapital(operatorId, price, hand, transaction);
         return this.trade(id, price, hand, operatorId, ConstData.TRADE_ACTION.BUY, undefined, transaction);
     }
@@ -163,6 +164,7 @@ export class StockService extends BaseService {
         operatorId: string,
         transaction?: Transaction,
     ) {
+        this.validInTradeTime();
         await this.validEnoughStock(operatorId, id, hand, transaction);
         return this.trade(id, price, hand, operatorId, ConstData.TRADE_ACTION.SOLD, undefined, transaction);
     }

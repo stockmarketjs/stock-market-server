@@ -41,7 +41,6 @@ export class StockController {
         @Body() body: StockBuyDto,
         @Operator() operator: AuthUser,
     ) {
-        this.stockService.validInTradeTime();
         await this.stockService.buy(id, body.price, body.hand, operator.id);
         return true;
     }
@@ -55,7 +54,6 @@ export class StockController {
         @Body() body: StockSoldDto,
         @Operator() operator: AuthUser,
     ) {
-        this.stockService.validInTradeTime();
         await this.stockService.sold(id, body.price, body.hand, operator.id);
         return true;
     }
