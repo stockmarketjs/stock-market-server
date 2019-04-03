@@ -111,8 +111,8 @@ export class StockService extends BaseService {
 
             await this.stockDao.update({
                 currentPrice: params.finalPrice,
-                change: params.finalPrice - prevPrice,
-                totalHand: stock.totalHand + params.finalHand,
+                change: Calc.sub(params.finalPrice, prevPrice),
+                totalHand: Calc.add(stock.totalHand, params.finalHand),
                 highestPrice: params.finalPrice > stock.highestPrice ? params.finalPrice : undefined,
                 lowestPrice: params.finalPrice < stock.lowestPrice ? params.finalPrice : undefined,
             }, {
