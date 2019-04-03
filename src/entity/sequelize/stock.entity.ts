@@ -49,10 +49,15 @@ export class Stock extends Model<Stock> {
     })
     currentPrice: number;
 
-    @ApiModelProperty({ description: '换手' })
+    @ApiModelProperty({ description: '涨幅' })
     @Column({
-        type: DataType.BIGINT,
+        type: DataType.DECIMAL(20, 2),
         allowNull: false,
+        field: 'current_price',
+        get() {
+            const val: string = this.getDataValue('change');
+            return val !== undefined ? Number(val) : undefined;
+        },
     })
     change: number;
 
