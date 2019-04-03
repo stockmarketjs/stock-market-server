@@ -6,6 +6,12 @@ import { ConstData } from '../../constant/data.const';
     timestamps: true,
     paranoid: true,
     underscored: true,
+    indexes: [
+        {
+            unique: false,
+            fields: ['stock_id', 'date'],
+        },
+    ],
 })
 export class StockOrder extends Model<StockOrder> {
     @ApiModelProperty({ description: 'ID' })
@@ -20,7 +26,6 @@ export class StockOrder extends Model<StockOrder> {
     @ApiModelProperty({ description: '股票ID' })
     @Column({
         type: DataType.UUID,
-        unique: true,
         allowNull: false,
         field: 'stock_id',
     })

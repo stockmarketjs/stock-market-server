@@ -3,6 +3,7 @@ import { BaseService } from './base.service';
 import { Transaction } from 'sequelize';
 import * as _ from 'lodash';
 import { UserStockDao } from '../dao/user_stock.dao';
+import { Calc } from '../common/util/calc';
 
 @Injectable()
 export class UserStockService extends BaseService {
@@ -47,12 +48,14 @@ export class UserStockService extends BaseService {
         userId: string,
         stockId: string,
         value: number,
+        costPrice: number,
         transaction: Transaction,
     ) {
         return this.operatorUserStock(
             userId,
             stockId,
             -value,
+            costPrice,
             transaction,
         );
     }
@@ -61,12 +64,14 @@ export class UserStockService extends BaseService {
         userId: string,
         stockId: string,
         value: number,
+        costPrice: number,
         transaction: Transaction,
     ) {
         return this.operatorUserStock(
             userId,
             stockId,
             value,
+            costPrice,
             transaction,
         );
     }
@@ -75,6 +80,7 @@ export class UserStockService extends BaseService {
         userId: string,
         stockId: string,
         value: number,
+        costPrice: number,
         transaction: Transaction,
     ) {
         const userStock = await this.userStockDao.findOne({
@@ -85,9 +91,37 @@ export class UserStockService extends BaseService {
             transaction,
             lock: Transaction.LOCK.UPDATE,
         });
-        if (!userStock) throw new BadRequestException('没有对应的股票账户');
+        if (!userStock && value <= 0) {
+            throw new BadRequestException('没有足额的股票');
+        } else if (!userStock) {
+            await this.userStockDao.create({
+                userId,
+                stockId,
+                amount: value,
+                costPrice,
+            }, { transaction });
+            return true;
+        }
+
+        // 累计求均价
+        const avgCostPrice = value > 0 ?
+            // 加法
+            Calc.div(
+                Calc.add(
+                    Calc.mul(userStock.amount, userStock.costPrice),
+                    Calc.mul(costPrice, value),
+                ),
+                Calc.add(
+                    userStock.amount,
+                    value,
+                ),
+            ) :
+            // 减法
+            userStock.costPrice;
+
         return this.userStockDao.update({
             amount: userStock.amount + value,
+            costPrice: avgCostPrice,
         }, {
                 where: { id: userStock.id },
                 transaction,

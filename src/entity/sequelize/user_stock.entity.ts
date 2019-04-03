@@ -25,7 +25,6 @@ export class UserStock extends Model<UserStock> {
     @ApiModelProperty({ description: '员工ID' })
     @Column({
         type: DataType.UUID,
-        unique: true,
         allowNull: false,
         field: 'user_id',
     })
@@ -34,7 +33,6 @@ export class UserStock extends Model<UserStock> {
     @ApiModelProperty({ description: '股票ID' })
     @Column({
         type: DataType.UUID,
-        unique: true,
         allowNull: false,
         field: 'stock_id',
     })

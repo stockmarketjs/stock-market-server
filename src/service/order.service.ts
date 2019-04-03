@@ -135,6 +135,7 @@ export class OrderService {
                 finalOrder.buyOrder.userId,
                 finalOrder.buyOrder.stockId,
                 finalOrder.hand * 100,
+                finalOrder.price,
                 transaction,
             );
             // 扣减卖方股票
@@ -142,6 +143,7 @@ export class OrderService {
                 finalOrder.soldOrder.userId,
                 finalOrder.soldOrder.stockId,
                 finalOrder.hand * 100,
+                finalOrder.price,
                 transaction,
             );
 
