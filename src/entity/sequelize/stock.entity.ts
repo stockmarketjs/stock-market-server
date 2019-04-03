@@ -53,7 +53,7 @@ export class Stock extends Model<Stock> {
     @Column({
         type: DataType.DECIMAL(20, 2),
         allowNull: false,
-        field: 'current_price',
+        field: 'change',
         get() {
             const val: string = this.getDataValue('change');
             return val !== undefined ? Number(val) : undefined;
