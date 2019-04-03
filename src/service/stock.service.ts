@@ -107,11 +107,10 @@ export class StockService extends BaseService {
         try {
             const stock = await this.findOneById(id, transaction);
             if (!stock) throw new NotFoundException();
-            const prevPrice = _.clone(stock.currentPrice);
 
             await this.stockDao.update({
                 currentPrice: params.finalPrice,
-                change: Calc.sub(params.finalPrice, prevPrice),
+                change: Calc.sub(params.finalPrice, stock.startPrice),
                 totalHand: Calc.add(stock.totalHand, params.finalHand),
                 highestPrice: params.finalPrice > stock.highestPrice ? params.finalPrice : undefined,
                 lowestPrice: params.finalPrice < stock.lowestPrice ? params.finalPrice : undefined,
