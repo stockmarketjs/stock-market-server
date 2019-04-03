@@ -15,4 +15,5 @@ MAINTAINER zhouyu muyu.zhouyu@outlook.com
 COPY --from=builder dist dist/
 COPY --from=builder config config/
 COPY --from=builder node_modules node_modules/
+RUN apk add -U tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && apk del tzdata
 ENTRYPOINT pm2-runtime /dist/src/main.js
