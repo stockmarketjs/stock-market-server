@@ -45,7 +45,7 @@ export class StockOrderService extends BaseService {
 
             const userStockOrdersOfShift = groupOfBuy[key];
             res.push({
-                shift: 1,
+                shift: keys.indexOf(key) + 1,
                 price: Number(key),
                 hand: _.sumBy(userStockOrdersOfShift, 'hand'),
             });

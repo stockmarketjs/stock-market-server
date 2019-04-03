@@ -5,7 +5,6 @@ import { StockHistoryService } from '../service/stock_history.service';
 import { Moment } from '../common/util/moment';
 import { StockHistory } from '../entity/sequelize/stock_history.entity';
 
-@UseGuards(AuthGuard())
 @ApiBearerAuth()
 @ApiUseTags('Stock - History')
 @Controller('stocks/:stockId/histories')
