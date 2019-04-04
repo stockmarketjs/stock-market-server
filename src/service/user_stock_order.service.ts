@@ -7,11 +7,14 @@ import { UserStockOrderCreateBodyDto, UserStockOrderUpdateBodyDto } from '../dto
 import { ConstData } from '../constant/data.const';
 import { StockDao } from '../dao/stock.dao';
 import { UserStockOrderFindAllVo } from '../vo/user_stock_order.vo';
+import { ConstProvider } from '../constant/provider.const';
+import { Sequelize } from 'sequelize-typescript';
 
 @Injectable()
 export class UserStockOrderService extends BaseService {
 
     constructor(
+        @Inject(ConstProvider.SEQUELIZE) private readonly sequelize: Sequelize,
         private readonly userStockOrderDao: UserStockOrderDao,
         private readonly stockDao: StockDao,
     ) {
@@ -93,6 +96,41 @@ export class UserStockOrderService extends BaseService {
                 },
                 transaction,
             });
+    }
+
+    public async cancelById(
+        id: string,
+        transaction?: Transaction,
+    ) {
+        const newTransaction = !transaction;
+        transaction = transaction ? transaction : await this.sequelize.transaction();
+
+        try {
+            const userStockOrder = await this.userStockOrderDao.findOne({
+                where: {
+                    id,
+                },
+                lock: Transaction.LOCK.UPDATE,
+                transaction,
+            });
+            if (!userStockOrder || userStockOrder.state !== ConstData.ORDER_STATE.READY)
+                throw new BadRequestException('撤回失败');
+            await this.userStockOrderDao.update({
+                state: ConstData.ORDER_STATE.CANCEL,
+            }, {
+                    where: {
+                        id,
+                        state: ConstData.ORDER_STATE.READY,
+                    },
+                    transaction,
+                });
+
+            newTransaction && await transaction.commit();
+            return true;
+        } catch (e) {
+            newTransaction && await transaction.rollback();
+            throw e;
+        }
     }
 
 }

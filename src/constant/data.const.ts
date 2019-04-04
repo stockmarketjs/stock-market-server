@@ -21,6 +21,8 @@ export namespace ConstData {
         SUCCESS = 2,
         // 撮合失败
         FAIL = 3,
+        // 撤回
+        CANCEL = 4,
     }
 
     /**
