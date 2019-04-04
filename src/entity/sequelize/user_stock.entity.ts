@@ -57,4 +57,13 @@ export class UserStock extends Model<UserStock> {
     })
     amount: number;
 
+    @ApiModelProperty({ description: '冻结持仓数' })
+    @Column({
+        type: DataType.BIGINT,
+        allowNull: false,
+        defaultValue: 0,
+        field: 'frozen_amount',
+    })
+    frozenAmount: number;
+
 }

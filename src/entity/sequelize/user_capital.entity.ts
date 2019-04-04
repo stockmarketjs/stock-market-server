@@ -32,4 +32,13 @@ export class UserCapital extends Model<UserCapital> {
     })
     cash: number;
 
+    @ApiModelProperty({ description: '冻结持有资金' })
+    @Column({
+        type: DataType.BIGINT,
+        allowNull: false,
+        defaultValue: 0,
+        field: 'frozen_cash',
+    })
+    frozenCash: number;
+
 }

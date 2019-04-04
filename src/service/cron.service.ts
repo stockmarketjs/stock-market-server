@@ -40,7 +40,14 @@ export class CronService extends BaseService {
     }
 
     private async fireRobotTrade() {
-        const job = new CronJob('*/20 * * * * *', async () => {
+        const begin = Moment(ConstData.TRADE_PERIODS[0].begin, 'HH:mm');
+        const end = Moment(ConstData.TRADE_PERIODS[1].end, 'HH:mm');
+        const beginMinutes = Moment(begin).format('mm');
+        const beginHours = Moment(begin).format('HH');
+        const endMinutes = Moment(end).format('mm');
+        const endHours = Moment(end).format('HH');
+
+        const job = new CronJob(`*/20 * ${beginHours}-${endHours} * * *`, async () => {
             Logger.log('机器人交易开始');
             await this.robotService.dispatchStrategy();
             Logger.log('机器人交易结束');
@@ -49,7 +56,7 @@ export class CronService extends BaseService {
     }
 
     private async fireStartQuotation() {
-        const begin = Moment(ConstData.TRADE_PERIODS[0].begin, 'HH:mm').subtract(1, 'hours');
+        const begin = Moment(ConstData.TRADE_PERIODS[0].begin, 'HH:mm').subtract(30, 'minutes');
         const minutes = Moment(begin).format('mm');
         const hours = Moment(begin).format('HH');
         const job = new CronJob(`00 ${minutes} ${hours} * * *`, async () => {
@@ -72,7 +79,7 @@ export class CronService extends BaseService {
 
     private async fireEndQuotation() {
         const currentDate = Moment().format('YYYY-MM-DD');
-        const end = Moment(ConstData.TRADE_PERIODS[1].end, 'HH:mm').add(30, 'minutes');
+        const end = Moment(ConstData.TRADE_PERIODS[1].end, 'HH:mm').add(10, 'minutes');
         const minutes = Moment(end).format('mm');
         const hours = Moment(end).format('HH');
         const job = new CronJob(`00 ${minutes} ${hours} * * *`, async () => {
@@ -150,12 +157,19 @@ export class CronService extends BaseService {
     }
 
     private async fireHandle() {
-        const handleJob = new CronJob('*/10 * * * * *', async () => {
+        const begin = Moment(ConstData.TRADE_PERIODS[0].begin, 'HH:mm');
+        const end = Moment(ConstData.TRADE_PERIODS[1].end, 'HH:mm');
+        const beginMinutes = Moment(begin).format('mm');
+        const beginHours = Moment(begin).format('HH');
+        const endMinutes = Moment(end).format('mm');
+        const endHours = Moment(end).format('HH');
+
+        const job = new CronJob(`*/10 * ${beginHours}-${endHours} * * *`, async () => {
             Logger.log('核算开始');
             await this.orderService.handle();
             Logger.log('核算结束');
         });
-        handleJob.start();
+        job.start();
     }
 
 }
