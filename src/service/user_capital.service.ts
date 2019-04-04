@@ -66,6 +66,15 @@ export class UserCapitalService extends BaseService {
         });
     }
 
+    /**
+     * XXX: 注意, 使用该方法, 需要自行上锁
+     *
+     * @param {string} userId
+     * @param {number} value
+     * @param {Transaction} transaction
+     * @returns
+     * @memberof UserCapitalService
+     */
     public async subtractUserCapital(
         userId: string,
         value: number,
@@ -78,6 +87,15 @@ export class UserCapitalService extends BaseService {
         );
     }
 
+    /**
+     * XXX: 注意, 使用该方法, 需要自行上锁
+     *
+     * @param {string} userId
+     * @param {number} value
+     * @param {Transaction} transaction
+     * @returns
+     * @memberof UserCapitalService
+     */
     public async addUserCapital(
         userId: string,
         value: number,
@@ -103,6 +121,66 @@ export class UserCapitalService extends BaseService {
         });
         if (!userCapital) throw new BadRequestException('没有对应的资金账户');
         return this.userCapitalDao.update({
+            cash: userCapital.cash + value,
+        }, {
+                where: { id: userCapital.id },
+                transaction,
+            });
+    }
+
+    /**
+     * XXX: 注意, 使用该方法, 需要自行上锁
+     *
+     * @param {string} userId
+     * @param {number} value
+     * @param {Transaction} [transaction]
+     * @returns
+     * @memberof UserCapitalService
+     */
+    public async frozenUserCapitalWhenCost(
+        userId: string,
+        value: number,
+        transaction?: Transaction,
+    ) {
+        const userCapital = await this.userCapitalDao.findOne({
+            where: {
+                userId,
+            },
+            transaction,
+        });
+        if (!userCapital) throw new BadRequestException('没有对应的资金账户');
+        return this.userCapitalDao.update({
+            frozenCash: userCapital.frozenCash + value,
+            cash: userCapital.cash - value,
+        }, {
+                where: { id: userCapital.id },
+                transaction,
+            });
+    }
+
+    /**
+     * XXX: 注意, 使用该方法, 需要自行上锁
+     *
+     * @param {string} userId
+     * @param {number} value
+     * @param {Transaction} [transaction]
+     * @returns
+     * @memberof UserCapitalService
+     */
+    public async unfrozenUserCapitalWhenCost(
+        userId: string,
+        value: number,
+        transaction?: Transaction,
+    ) {
+        const userCapital = await this.userCapitalDao.findOne({
+            where: {
+                userId,
+            },
+            transaction,
+        });
+        if (!userCapital) throw new BadRequestException('没有对应的资金账户');
+        return this.userCapitalDao.update({
+            frozenCash: userCapital.frozenCash - value,
             cash: userCapital.cash + value,
         }, {
                 where: { id: userCapital.id },

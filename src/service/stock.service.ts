@@ -152,9 +152,29 @@ export class StockService extends BaseService {
         operatorId: string,
         transaction?: Transaction,
     ) {
-        this.validInTradeTime();
-        await this.validEnoughCapital(operatorId, price, hand, transaction);
-        return this.trade(id, price, hand, operatorId, ConstData.TRADE_ACTION.BUY, undefined, transaction);
+        const newTransaction = !transaction;
+        transaction = transaction ? transaction : await this.sequelize.transaction();
+
+        try {
+            this.validInTradeTime();
+            await this.validEnoughCapital(operatorId, price, hand, transaction);
+
+            await this.userCapitalService.findOneByPkLock(
+                operatorId, transaction,
+            );
+            const cost = Calc.calcStockBuyCost(hand, price);
+            await this.userCapitalService.frozenUserCapitalWhenCost(
+                operatorId, cost, transaction,
+            );
+
+            const userStockOrder = await this.trade(id, price, hand, operatorId, ConstData.TRADE_ACTION.BUY, undefined, transaction);
+
+            newTransaction && await transaction.commit();
+            return userStockOrder;
+        } catch (e) {
+            newTransaction && await transaction.rollback();
+            throw e;
+        }
     }
 
     public async sold(
@@ -164,9 +184,28 @@ export class StockService extends BaseService {
         operatorId: string,
         transaction?: Transaction,
     ) {
-        this.validInTradeTime();
-        await this.validEnoughStock(operatorId, id, hand, transaction);
-        return this.trade(id, price, hand, operatorId, ConstData.TRADE_ACTION.SOLD, undefined, transaction);
+        const newTransaction = !transaction;
+        transaction = transaction ? transaction : await this.sequelize.transaction();
+
+        try {
+            this.validInTradeTime();
+            await this.validEnoughStock(operatorId, id, hand, transaction);
+
+            await this.userStockService.findOneByPkLock(
+                operatorId, id, transaction,
+            );
+            await this.userStockService.frozenUserStockWhenCost(
+                operatorId, id, hand * 100, transaction,
+            );
+
+            const userStockOrder = await this.trade(id, price, hand, operatorId, ConstData.TRADE_ACTION.SOLD, undefined, transaction);
+
+            newTransaction && await transaction.commit();
+            return userStockOrder;
+        } catch (e) {
+            newTransaction && await transaction.rollback();
+            throw e;
+        }
     }
 
     public async trade(

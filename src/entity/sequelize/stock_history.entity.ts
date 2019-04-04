@@ -26,7 +26,6 @@ export class StockHistory extends Model<StockHistory> {
     @ApiModelProperty({ description: '股票ID' })
     @Column({
         type: DataType.UUID,
-        unique: true,
         allowNull: false,
         field: 'stock_id',
     })

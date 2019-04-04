@@ -79,7 +79,7 @@ export class CronService extends BaseService {
 
     private async fireEndQuotation() {
         const currentDate = Moment().format('YYYY-MM-DD');
-        const end = Moment(ConstData.TRADE_PERIODS[1].end, 'HH:mm').add(10, 'minutes');
+        const end = Moment(ConstData.TRADE_PERIODS[1].end, 'HH:mm').add(5, 'minutes');
         const minutes = Moment(end).format('mm');
         const hours = Moment(end).format('HH');
         const job = new CronJob(`00 ${minutes} ${hours} * * *`, async () => {

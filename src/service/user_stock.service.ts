@@ -157,4 +157,56 @@ export class UserStockService extends BaseService {
             });
     }
 
+    /**
+     * XXX: 注意, 使用该方法, 需要自行上锁
+     */
+    public async frozenUserStockWhenCost(
+        userId: string,
+        stockId: string,
+        value: number,
+        transaction?: Transaction,
+    ) {
+        const userStock = await this.userStockDao.findOne({
+            where: {
+                userId,
+                stockId,
+            },
+            transaction,
+        });
+        if (!userStock) throw new BadRequestException('没有足额的股票');
+        return this.userStockDao.update({
+            frozenAmount: userStock.frozenAmount + value,
+            amount: userStock.amount - value,
+        }, {
+                where: { id: userStock.id },
+                transaction,
+            });
+    }
+
+    /**
+     * XXX: 注意, 使用该方法, 需要自行上锁
+     */
+    public async unfrozenUserStockWhenCost(
+        userId: string,
+        stockId: string,
+        value: number,
+        transaction?: Transaction,
+    ) {
+        const userStock = await this.userStockDao.findOne({
+            where: {
+                userId,
+                stockId,
+            },
+            transaction,
+        });
+        if (!userStock) throw new BadRequestException('没有足额的股票');
+        return this.userStockDao.update({
+            frozenAmount: userStock.frozenAmount - value,
+            amount: userStock.amount + value,
+        }, {
+                where: { id: userStock.id },
+                transaction,
+            });
+    }
+
 }

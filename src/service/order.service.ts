@@ -158,7 +158,13 @@ export class OrderService {
         for (const finalOrder of finalOrders) {
             const payOfBuyer = Calc.calcStockBuyCost(finalOrder.buyOrder.hand, finalOrder.price);
 
+            // 先解冻买方资金
             // 扣减买方资金
+            await this.userCapitalService.unfrozenUserCapitalWhenCost(
+                finalOrder.buyOrder.userId,
+                payOfBuyer,
+                transaction,
+            );
             await this.userCapitalService.subtractUserCapital(
                 finalOrder.buyOrder.userId,
                 payOfBuyer,
@@ -176,6 +182,13 @@ export class OrderService {
                 finalOrder.buyOrder.stockId,
                 finalOrder.hand * 100,
                 finalOrder.price,
+                transaction,
+            );
+            // 先解冻卖方股票
+            await this.userStockService.unfrozenUserStockWhenCost(
+                finalOrder.soldOrder.userId,
+                finalOrder.soldOrder.stockId,
+                finalOrder.hand * 100,
                 transaction,
             );
             // 扣减卖方股票
