@@ -53,6 +53,19 @@ export class UserCapitalService extends BaseService {
         }, { transaction });
     }
 
+    public async findOneByPkLock(
+        userId: string,
+        transaction: Transaction,
+    ) {
+        return this.userCapitalDao.findOne({
+            where: {
+                userId,
+            },
+            transaction,
+            lock: Transaction.LOCK.UPDATE,
+        });
+    }
+
     public async subtractUserCapital(
         userId: string,
         value: number,
@@ -87,7 +100,6 @@ export class UserCapitalService extends BaseService {
                 userId,
             },
             transaction,
-            lock: Transaction.LOCK.UPDATE,
         });
         if (!userCapital) throw new BadRequestException('没有对应的资金账户');
         return this.userCapitalDao.update({

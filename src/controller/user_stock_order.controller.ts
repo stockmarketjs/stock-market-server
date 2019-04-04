@@ -3,6 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiUseTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UserStockOrderService } from '../service/user_stock_order.service';
 import { UserStockOrder } from '../entity/sequelize/user_stock_order.entity';
+import { UserStockOrderFindAllVo } from '../vo/user_stock_order.vo';
 
 @UseGuards(AuthGuard())
 @ApiBearerAuth()
@@ -16,7 +17,7 @@ export class UserStockOrderController {
 
     @ApiOperation({ title: '获取单个员工的股票订单' })
     @Get()
-    @ApiResponse({ status: HttpStatus.OK, type: [UserStockOrder] })
+    @ApiResponse({ status: HttpStatus.OK, type: [UserStockOrderFindAllVo] })
     public async index(
         @Param('userId') userId: string,
     ) {

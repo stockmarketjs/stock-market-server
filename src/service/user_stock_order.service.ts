@@ -5,12 +5,15 @@ import * as _ from 'lodash';
 import { UserStockOrderDao } from '../dao/user_stock_order.dao';
 import { UserStockOrderCreateBodyDto, UserStockOrderUpdateBodyDto } from '../dto/user_stock_order/user_stock_order.dto';
 import { ConstData } from '../constant/data.const';
+import { StockDao } from '../dao/stock.dao';
+import { UserStockOrderFindAllVo } from '../vo/user_stock_order.vo';
 
 @Injectable()
 export class UserStockOrderService extends BaseService {
 
     constructor(
         private readonly userStockOrderDao: UserStockOrderDao,
+        private readonly stockDao: StockDao,
     ) {
         super();
     }
@@ -39,12 +42,24 @@ export class UserStockOrderService extends BaseService {
     public async findAllByUserId(
         userId: string,
         transaction?: Transaction,
-    ) {
-        return this.userStockOrderDao.findAll({
+    ): Promise<UserStockOrderFindAllVo[]> {
+        const userStockOrders = await this.userStockOrderDao.findAll({
             where: {
                 userId,
             },
             transaction,
+        });
+        const stocks = await this.stockDao.findAll({
+            where: {
+                id: {
+                    [Op.in]: _.map(userStockOrders, 'stockId'),
+                },
+            },
+        });
+        return userStockOrders.map(userStockOrder => {
+            const stock = _.find(stocks, { id: userStockOrder.stockId });
+            userStockOrder.setDataValue<any>('stock', stock);
+            return userStockOrder;
         });
     }
 

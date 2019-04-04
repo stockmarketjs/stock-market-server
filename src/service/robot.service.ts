@@ -57,7 +57,7 @@ export class RobotService extends BaseService {
         if (!stock) return false;
 
         const hand = _.random(1, 100);
-        const price = _.random(Calc.sub(stock.currentPrice, 0.05), Calc.add(stock.currentPrice, 0.05));
+        const price = _.round(_.random(Calc.mul(stock.currentPrice, 0.9), Calc.mul(stock.currentPrice, 1.1)), 2);
         await this.stockService.buy(stock.id, price, hand, operatorId, transaction);
     }
 
@@ -70,23 +70,21 @@ export class RobotService extends BaseService {
         if (!stock) return false;
 
         const hand = _.random(1, 100);
-        const price = _.random(Calc.sub(stock.currentPrice, 0.05), Calc.add(stock.currentPrice, 0.05));
+        const price = _.round(_.random(Calc.mul(stock.currentPrice, 0.9), Calc.mul(stock.currentPrice, 1.1)), 2);
         await this.stockService.sold(stock.id, price, hand, operatorId, transaction);
     }
 
     public async dispatchStrategy() {
-        const transaction = await this.sequelize.transaction();
-        try {
-            const robots = await this.userService.findAllRobot(transaction);
-            for (const robot of robots) {
-                try {
-                    await this.randomStrategy(robot.id, transaction);
-                } catch{ }
+        const robots = await this.userService.findAllRobot();
+
+        for (const robot of robots) {
+            const transaction = await this.sequelize.transaction();
+            try {
+                await this.randomStrategy(robot.id, transaction);
+                await transaction.commit();
+            } catch{
+                await transaction.rollback();
             }
-            await transaction.commit();
-        } catch (e) {
-            console.log(e);
-            await transaction.rollback();
         }
     }
 

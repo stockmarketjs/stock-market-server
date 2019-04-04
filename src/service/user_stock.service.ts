@@ -1,15 +1,18 @@
 import { Injectable, UnauthorizedException, NotFoundException, Inject, BadRequestException } from '@nestjs/common';
 import { BaseService } from './base.service';
-import { Transaction } from 'sequelize';
+import { Transaction, Op } from 'sequelize';
 import * as _ from 'lodash';
 import { UserStockDao } from '../dao/user_stock.dao';
 import { Calc } from '../common/util/calc';
+import { UserStockFindAllVo } from '../vo/user_stock.vo';
+import { StockDao } from '../dao/stock.dao';
 
 @Injectable()
 export class UserStockService extends BaseService {
 
     constructor(
         private readonly userStockDao: UserStockDao,
+        private readonly stockDao: StockDao,
     ) {
         super();
     }
@@ -35,12 +38,39 @@ export class UserStockService extends BaseService {
     public async findAllByUserId(
         userId: string,
         transaction?: Transaction,
-    ) {
-        return this.userStockDao.findAll({
+    ): Promise<UserStockFindAllVo[]> {
+        const res = await this.userStockDao.findAll({
             where: {
                 userId,
             },
             transaction,
+        });
+        const stocks = await this.stockDao.findAll({
+            where: {
+                id: {
+                    [Op.in]: _.map(res, 'stockId'),
+                },
+            },
+        });
+        return res.map(item => {
+            const stock = _.find(stocks, { id: item.stockId });
+            item.setDataValue<any>('stock', stock);
+            return item;
+        });
+    }
+
+    public async findOneByPkLock(
+        userId: string,
+        stockId: string,
+        transaction: Transaction,
+    ) {
+        return this.userStockDao.findOne({
+            where: {
+                userId,
+                stockId,
+            },
+            transaction,
+            lock: Transaction.LOCK.UPDATE,
         });
     }
 
@@ -89,7 +119,6 @@ export class UserStockService extends BaseService {
                 stockId,
             },
             transaction,
-            lock: Transaction.LOCK.UPDATE,
         });
         if (!userStock && value <= 0) {
             throw new BadRequestException('没有足额的股票');

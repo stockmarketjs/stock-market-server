@@ -13,6 +13,8 @@ import { ConstData } from '../constant/data.const';
 import { Calc } from '../common/util/calc';
 import { Moment } from '../common/util/moment';
 import { $ } from '../common/util/function';
+import { UserStock } from '../entity/sequelize/user_stock.entity';
+import { UserCapital } from '../entity/sequelize/user_capital.entity';
 
 @Injectable()
 export class OrderService {
@@ -115,6 +117,44 @@ export class OrderService {
         }[],
         transaction: Transaction,
     ) {
+        // findOneByPkLock
+
+        // 锁用户股票账户, 防止重复锁
+        const lockUserStocks: Partial<UserStock>[] = [];
+        for (const finalOrder of finalOrders) {
+            lockUserStocks.push({
+                userId: finalOrder.buyOrder.userId,
+                stockId: finalOrder.buyOrder.stockId,
+            }, {
+                    userId: finalOrder.soldOrder.userId,
+                    stockId: finalOrder.soldOrder.stockId,
+                });
+        }
+        const uniqLockUserStocks: Partial<UserStock>[] = _.uniqWith(lockUserStocks, _.isEqual);
+        for (const uniqLockUserStock of uniqLockUserStocks) {
+            if (uniqLockUserStock.userId && uniqLockUserStock.stockId) await this.userStockService.findOneByPkLock(
+                uniqLockUserStock.userId,
+                uniqLockUserStock.stockId,
+                transaction,
+            );
+        }
+        // 锁用户资金账户, 防止重复锁
+        const lockUserCapitals: Partial<UserCapital>[] = [];
+        for (const finalOrder of finalOrders) {
+            lockUserCapitals.push({
+                userId: finalOrder.buyOrder.userId,
+            }, {
+                    userId: finalOrder.soldOrder.userId,
+                });
+        }
+        const uniqLockUserCapitals: Partial<UserCapital>[] = _.uniqWith(lockUserCapitals, _.isEqual);
+        for (const uniqLockUserCapital of uniqLockUserCapitals) {
+            if (uniqLockUserCapital.userId) await this.userCapitalService.findOneByPkLock(
+                uniqLockUserCapital.userId,
+                transaction,
+            );
+        }
+
         for (const finalOrder of finalOrders) {
             const payOfBuyer = Calc.calcStockBuyCost(finalOrder.buyOrder.hand, finalOrder.price);
 

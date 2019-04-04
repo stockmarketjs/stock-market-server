@@ -110,18 +110,19 @@ export class CronService extends BaseService {
         // 0 0 1 * * *
         const createRobotJob = new CronJob('54 */30 * * * *', async () => {
             Logger.log('发钱开始');
-            const transaction = await this.sequelize.transaction();
-            try {
-                const users = await this.userService.findAll(transaction);
-                for (const user of users) {
+            const users = await this.userService.findAll();
+            for (const user of users) {
+                const transaction = await this.sequelize.transaction();
+                try {
                     const userCapital = await this.userCapitalService.findOneByUserId(user.id, transaction);
                     if (userCapital) await this.userCapitalService.addUserCapital(user.id, 1000, transaction);
+                    await transaction.commit();
+                } catch (e) {
+                    console.log(e);
+                    await transaction.rollback();
                 }
-                await transaction.commit();
-            } catch (e) {
-                console.log(e);
-                await transaction.rollback();
             }
+
             Logger.log('发钱结束');
         });
         createRobotJob.start();
