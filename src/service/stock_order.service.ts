@@ -41,7 +41,7 @@ export class StockOrderService extends BaseService {
         // 查看档数, 限定为5档
         const limitShift = 5;
         for (const key of type === ConstData.TRADE_ACTION.BUY ? keysSorted.reverse() : keysSorted) {
-            if (keys.indexOf(key) === limitShift - 1) break;
+            if (keys.indexOf(key) === limitShift) break;
 
             const userStockOrdersOfShift = groupOfBuy[key];
             res.push({
