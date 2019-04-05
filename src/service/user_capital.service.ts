@@ -188,4 +188,14 @@ export class UserCapitalService extends BaseService {
             });
     }
 
+    public async findAllOrderCash(
+        limit: number,
+    ) {
+        return this.userCapitalDao.findAll({
+            order: [['cash', 'DESC']],
+            attributes: ['userId', 'cash'],
+            limit,
+        });
+    }
+
 }

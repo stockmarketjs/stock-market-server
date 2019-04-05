@@ -15,6 +15,7 @@ import { CronService } from '../service/cron.service';
 import { UserService } from '../service/user.service';
 import { JwtStrategy } from '../common/passport/jwt.strategy';
 import { RobotService } from '../service/robot.service';
+import { StockSummaryService } from '../service/stock_summary.service';
 
 @Module({
     imports: [
@@ -32,13 +33,13 @@ import { RobotService } from '../service/robot.service';
         AuthService, JwtStrategy,
         StockService, UserCapitalService, UserStockService, StockHistoryService,
         StockOrderService, UserStockOrderService, OrderService,
-        CronService, UserService, RobotService,
+        CronService, UserService, RobotService, StockSummaryService,
     ],
     exports: [
         AuthService, PassportModule,
         StockService, UserCapitalService, UserStockService, StockHistoryService,
         StockOrderService, UserStockOrderService,
-        CronService, UserService,
+        CronService, UserService, StockSummaryService,
     ],
 })
 export class ServiceModule { }

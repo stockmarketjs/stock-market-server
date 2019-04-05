@@ -7,13 +7,14 @@ import { UserStockController } from '../controller/user_stock.controller';
 import { UserCapitalController } from '../controller/user_capital.controller';
 import { UserStockOrderController } from '../controller/user_stock_order.controller';
 import { StockOrderController } from '../controller/stock_order.controller';
+import { StockSummaryController } from '../controller/stock_summary.controller';
 
 @Module({
     imports: [ServiceModule],
     controllers: [
         AuthController, StockController, StockHistoryController,
         StockOrderController, UserCapitalController, UserStockController,
-        UserStockOrderController,
+        UserStockOrderController, StockSummaryController,
     ],
 })
 export class ControllerModule { }

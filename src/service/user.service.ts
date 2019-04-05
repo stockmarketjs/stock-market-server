@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException, NotFoundException, BadRequestException } from '@nestjs/common';
 import { BaseService } from './base.service';
-import { Transaction } from 'sequelize/types';
+import { Transaction, Op } from 'sequelize';
 import { UserDao } from '../dao/user.dao';
 import { User } from '../entity/sequelize/user.entity';
 import { ConstData } from '../constant/data.const';
@@ -28,6 +28,22 @@ export class UserService extends BaseService {
                 isRobot: ConstData.Boolean.TRUE,
             },
             transaction,
+        });
+    }
+
+    public async countUsers(
+        option: {
+            includeRobot: ConstData.Boolean,
+        },
+    ) {
+        return this.userDao.count({
+            where: {
+                [Op.and]: [
+                    option.includeRobot === ConstData.Boolean.TRUE ? undefined : {
+                        isRobot: ConstData.Boolean.FALSE,
+                    },
+                ],
+            },
         });
     }
 
