@@ -37,7 +37,7 @@ export namespace ConstData {
          */
         LIMIT = 0,
         /**
-         * 市价委托
+         * 市价委托 TODO: 国家貌似已经废除
          */
         MARKET = 1,
     }

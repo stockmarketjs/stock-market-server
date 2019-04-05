@@ -247,19 +247,16 @@ export class OrderService {
             price: number,
             hand: number,
         }[] = [];
-        let finalOrder: {
-            buyOrder: UserStockOrder,
-            soldOrder: UserStockOrder,
-            price: number,
-            hand: number,
-        } | null;
-        do {
-            finalOrder = this.matchTrade(readyPool);
-            if (finalOrder != null) {
-                finalOrders.push(finalOrder);
-            }
-        } while (finalOrder != null);
 
+        // 获取限价池
+        const limitReadyPools = _.filter(readyPool, { mode: ConstData.TRADE_MODE.LIMIT });
+        // 获取最新订单们
+        const orders = _.orderBy(limitReadyPools, 'createdAt', 'desc');
+        for (const order of orders) {
+            const finalOrder = this.matchTrade(readyPool, order);
+            if (finalOrder != null) finalOrders.push(finalOrder);
+        }
+        if (finalOrders.length === 0) Logger.log('没有可以撮合的');
         return finalOrders;
     }
 
@@ -273,30 +270,29 @@ export class OrderService {
      */
     private matchTrade(
         readyPool: UserStockOrder[],
+        currentOrder: UserStockOrder,
     ): {
         buyOrder: UserStockOrder,
         soldOrder: UserStockOrder,
         price: number,
         hand: number,
     } | null {
-        // 获取市价池 优先
-        // TODO:
-        // 获取限价池
-        const limitOrders = _.filter(readyPool, { mode: ConstData.TRADE_MODE.LIMIT });
-
-        // 获取最新订单
-        const currentOrder = _(limitOrders).orderBy('createdAt', 'desc').first();
-        if (!currentOrder) return null;
         // 获取限价买单池 较高价格优先 时间优先
-        const buyOrders = _(limitOrders).filter({ type: ConstData.TRADE_ACTION.BUY })
+        const buyOrders = _(readyPool).filter({ type: ConstData.TRADE_ACTION.BUY })
             .orderBy(['price', 'createdAt'], ['desc', 'asc']).value();
         // 获取限价卖单池 较低价格优先 时间优先
-        const soldOrders = _(limitOrders).filter({ type: ConstData.TRADE_ACTION.SOLD })
+        const soldOrders = _(readyPool).filter({ type: ConstData.TRADE_ACTION.SOLD })
             .orderBy(['price', 'createdAt'], ['asc', 'asc']).value();
 
-        const finalOrder = this.calcFinalPrice(buyOrders, soldOrders, currentOrder);
+        // 最高买入订单
+        const highestBuyOrder = _.first(buyOrders);
+        // 最低卖出订单
+        const lowestSoldOrder = _.first(soldOrders);
+        // 没有买单卖单, 无法交易
+        if (!highestBuyOrder || !lowestSoldOrder) return null;
+
+        const finalOrder = this.calcFinalPrice(highestBuyOrder, lowestSoldOrder, currentOrder);
         if (!finalOrder) {
-            console.log('没有可以撮合的');
             return null;
         } else {
             if (finalOrder.buyOrder.hand === finalOrder.soldOrder.hand) {
@@ -348,28 +344,26 @@ export class OrderService {
     /**
      * 成交价规则
      *
-     * @param {any[]} buyOrders
-     * @param {any[]} soldOrders
-     * @param {*} currentOrder
-     * @returns
+     * @private
+     * @param {UserStockOrder} highestBuyOrder
+     * @param {UserStockOrder} lowestSoldOrder
+     * @param {UserStockOrder} currentOrder
+     * @returns {({
+     *         buyOrder: UserStockOrder,
+     *         soldOrder: UserStockOrder,
+     *         price: number,
+     *     } | null)}
      * @memberof OrderService
      */
     private calcFinalPrice(
-        buyOrders: UserStockOrder[],
-        soldOrders: UserStockOrder[],
+        highestBuyOrder: UserStockOrder,
+        lowestSoldOrder: UserStockOrder,
         currentOrder: UserStockOrder,
     ): {
         buyOrder: UserStockOrder,
         soldOrder: UserStockOrder,
         price: number,
     } | null {
-        // 最高买入订单
-        const highestBuyOrder = _.first(buyOrders);
-        // 最低卖出订单
-        const lowestSoldOrder = _.first(soldOrders);
-
-        // 没有买单卖单, 无法交易
-        if (!highestBuyOrder && !lowestSoldOrder) return null;
 
         // 最高买入价格 与 最低卖出价格 相同, 则立即成交
         if (highestBuyOrder && lowestSoldOrder &&
