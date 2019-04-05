@@ -10,6 +10,7 @@ import { $ } from '../common/util/function';
 import { UserStockOrderDao } from '../dao/user_stock_order.dao';
 import { ConstData } from '../constant/data.const';
 import { StockOrderFindAllBuyShift, StockOrderFindAllSoldShift } from '../vo/stock_order.vo';
+import { StockService } from './stock.service';
 
 @Injectable()
 export class StockOrderService extends BaseService {
@@ -17,6 +18,7 @@ export class StockOrderService extends BaseService {
     constructor(
         private readonly stockOrderDao: StockOrderDao,
         private readonly userStockOrderDao: UserStockOrderDao,
+        private readonly stockService: StockService,
     ) {
         super();
     }
@@ -99,6 +101,10 @@ export class StockOrderService extends BaseService {
         const periods = <{ begin: string, end: string }[]>ConstData.TRADE_PERIODS;
         // 格式化交易时间段
         const tradePeriods = _.map(periods, tradePeriod => {
+            // return {
+            //     begin: Moment(tradePeriod.begin, 'HH:mm').toISOString(),
+            //     end: Moment(tradePeriod.end, 'HH:mm').toISOString(),
+            // }
             const endMarket = Moment(tradePeriod.end, 'HH:mm');
             if (Moment().format('HHmm') >= endMarket.format('HHmm')) {
                 return {
@@ -114,6 +120,7 @@ export class StockOrderService extends BaseService {
         });
         const minutes = this.generateEmptyPeriods(tradePeriods);
 
+        const stock = await this.stockService.findOneByIdOrThrow(stockId);
         const res: StockOrder[] = [];
         for (const minute of minutes) {
             const item = _.find(data, { minute });
@@ -123,7 +130,7 @@ export class StockOrderService extends BaseService {
                 res.push(new StockOrder({
                     minute,
                     hand: 0,
-                    price: $.tail(res) ? $.tail(res).price : 0,
+                    price: $.tail(res) ? $.tail(res).price : stock.startPrice,
                 }));
             }
         }

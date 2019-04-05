@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, NotFoundException, Inject, BadRequestException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, NotFoundException, Inject, BadRequestException, forwardRef } from '@nestjs/common';
 import { BaseService } from './base.service';
 import { Transaction, Op } from 'sequelize';
 import * as _ from 'lodash';
@@ -9,6 +9,7 @@ import { StockDao } from '../dao/stock.dao';
 import { UserStockOrderFindAllVo } from '../vo/user_stock_order.vo';
 import { ConstProvider } from '../constant/provider.const';
 import { Sequelize } from 'sequelize-typescript';
+import { StockService } from './stock.service';
 
 @Injectable()
 export class UserStockOrderService extends BaseService {
@@ -17,6 +18,8 @@ export class UserStockOrderService extends BaseService {
         @Inject(ConstProvider.SEQUELIZE) private readonly sequelize: Sequelize,
         private readonly userStockOrderDao: UserStockOrderDao,
         private readonly stockDao: StockDao,
+        @Inject(forwardRef(() => StockService))
+        private readonly stockService: StockService,
     ) {
         super();
     }
@@ -102,6 +105,7 @@ export class UserStockOrderService extends BaseService {
         id: string,
         transaction?: Transaction,
     ) {
+        this.stockService.validInTradeTime();
         const newTransaction = !transaction;
         transaction = transaction ? transaction : await this.sequelize.transaction();
 
@@ -121,6 +125,41 @@ export class UserStockOrderService extends BaseService {
                     where: {
                         id,
                         state: ConstData.ORDER_STATE.READY,
+                    },
+                    transaction,
+                });
+
+            newTransaction && await transaction.commit();
+            return true;
+        } catch (e) {
+            newTransaction && await transaction.rollback();
+            throw e;
+        }
+    }
+
+    public async bulkCancel(
+        stockId: string,
+        transaction?: Transaction,
+    ) {
+        const newTransaction = !transaction;
+        transaction = transaction ? transaction : await this.sequelize.transaction();
+
+        try {
+            const userStockOrders = await this.userStockOrderDao.findAll({
+                where: {
+                    stockId,
+                    state: ConstData.ORDER_STATE.READY,
+                },
+                attributes: ['id'],
+                transaction,
+            });
+            await this.userStockOrderDao.bulkUpdate({
+                state: ConstData.ORDER_STATE.CANCEL,
+            }, {
+                    where: {
+                        id: {
+                            [Op.in]: userStockOrders.map(v => v.id),
+                        },
                     },
                     transaction,
                 });

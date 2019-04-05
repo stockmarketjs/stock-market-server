@@ -113,15 +113,17 @@ export class Calc {
 
     // 乘法
     static mul(arg1: number, arg2: number) {
-        let m = 0;
-        const s1 = arg1.toString();
-        const s2 = arg2.toString();
-        try {
-            m += s1.split('.')[1].length;
-            m += s2.split('.')[1].length;
-        } catch (e) {
-        }
-        return Number(s1.replace('.', '')) * Number(s2.replace('.', '')) / Math.pow(10, m);
+        let t1 = 0;
+        let t2 = 0;
+        let t = 0;
+        let r1: number;
+        let r2: number;
+        try { t1 = arg1.toString().split('.')[1].length; } catch (e) { }
+        try { t2 = arg2.toString().split('.')[1].length; } catch (e) { }
+        r1 = Number(arg1);
+        r2 = Number(arg2);
+        t = t1 >= t2 ? t1 : t2;
+        return (r1 * Math.pow(10, t)) * (r2 * Math.pow(10, t)) / Math.pow(10, t) / Math.pow(10, t);
     }
 
 }

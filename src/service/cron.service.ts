@@ -13,6 +13,7 @@ import { StockService } from './stock.service';
 import { Moment } from '../common/util/moment';
 import { ConstData } from '../constant/data.const';
 import { RobotService } from './robot.service';
+import { UserStockOrderService } from './user_stock_order.service';
 
 @Injectable()
 export class CronService extends BaseService {
@@ -26,6 +27,7 @@ export class CronService extends BaseService {
         private readonly stockHistoryService: StockHistoryService,
         private readonly stockService: StockService,
         private readonly robotService: RobotService,
+        private readonly userStockOrderService: UserStockOrderService,
     ) {
         super();
     }
@@ -88,6 +90,7 @@ export class CronService extends BaseService {
             try {
                 const stocks = await this.stockService.findAll(transaction);
                 for (const stock of stocks) {
+                    await this.userStockOrderService.bulkCancel(stock.id, transaction);
                     await this.stockService.endQuotation(stock.id, transaction);
                     await this.stockHistoryService.create({
                         stockId: stock.id,
