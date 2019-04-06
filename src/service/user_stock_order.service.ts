@@ -35,10 +35,21 @@ export class UserStockOrderService extends BaseService {
         stockId: string,
         transaction: Transaction,
     ) {
-        return this.userStockOrderDao.findAll({
+        const ssddsa = await this.userStockOrderDao.findAll({
             where: {
                 stockId,
                 state: ConstData.ORDER_STATE.READY,
+            },
+            transaction,
+            attributes:['id'],
+        });
+        return this.userStockOrderDao.findAll({
+            where:{
+                id:{
+                    [Op.in]:[
+                        _.map(ssddsa,'id'),
+                    ],
+                },
             },
             transaction,
             lock: Transaction.LOCK.UPDATE,

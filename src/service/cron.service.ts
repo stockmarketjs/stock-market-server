@@ -167,7 +167,7 @@ export class CronService extends BaseService {
         const endMinutes = Moment(end).format('mm');
         const endHours = Moment(end).format('HH');
 
-        const job = new CronJob(`*/10 * ${beginHours}-${endHours} * * *`, async () => {
+        const job = new CronJob(`45 * ${beginHours}-${endHours} * * *`, async () => {
             Logger.log('核算开始');
             await this.orderService.handle();
             Logger.log('核算结束');
