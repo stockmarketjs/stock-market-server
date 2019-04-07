@@ -39,5 +39,4 @@ export class UserStockOrderCreateBodyDto {
     @ApiModelProperty({ description: '手数' })
     @IsDefined() @IsNumber()
     hand: number;
-
 }

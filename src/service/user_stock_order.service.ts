@@ -33,6 +33,9 @@ export class UserStockOrderService extends BaseService {
         params: UserStockOrderCreateBodyDto,
         transaction?: Transaction,
     ) {
+        Object.assign(params, {
+            tradeHand: params.hand,
+        });
         return this.userStockOrderDao.create(params, { transaction });
     }
 
@@ -69,6 +72,7 @@ export class UserStockOrderService extends BaseService {
             where: {
                 userId,
             },
+            order: [['updatedAt', 'DESC']],
             transaction,
         });
         const stocks = await this.stockDao.findAll({
