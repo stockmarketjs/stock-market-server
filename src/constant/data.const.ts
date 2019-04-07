@@ -44,7 +44,7 @@ export namespace ConstData {
 
     export const TRADE_PERIODS = [
         {
-            begin: '09:30',
+            begin: '00:30',
             end: '11:30',
         },
         {

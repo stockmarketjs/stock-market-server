@@ -7,7 +7,6 @@ import {
     NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { CronService } from './service/cron.service';
 import { ConfigServiceStatic } from './provider/config/config.service';
 
 async function bootstrap() {
@@ -36,9 +35,6 @@ async function bootstrap() {
         .build();
     const document = SwaggerModule.createDocument(app, options);
     SwaggerModule.setup('docs', app, document);
-
-    const cronService = app.get(CronService);
-    await cronService.fire();
 
     await app.listen(ConfigServiceStatic.port, '0.0.0.0');
 }

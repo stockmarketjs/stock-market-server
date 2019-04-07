@@ -9,12 +9,9 @@ import { UserStockService } from '../service/user_stock.service';
 import { StockHistoryService } from '../service/stock_history.service';
 import { StockOrderService } from '../service/stock_order.service';
 import { UserStockOrderService } from '../service/user_stock_order.service';
-import { OrderService } from '../service/order.service';
 import { ConfigModule } from '../provider/config/config.module';
-import { CronService } from '../service/cron.service';
 import { UserService } from '../service/user.service';
 import { JwtStrategy } from '../common/passport/jwt.strategy';
-import { RobotService } from '../service/robot.service';
 import { StockSummaryService } from '../service/stock_summary.service';
 
 @Module({
@@ -32,14 +29,14 @@ import { StockSummaryService } from '../service/stock_summary.service';
     providers: [
         AuthService, JwtStrategy,
         StockService, UserCapitalService, UserStockService, StockHistoryService,
-        StockOrderService, UserStockOrderService, OrderService,
-        CronService, UserService, RobotService, StockSummaryService,
+        StockOrderService, UserStockOrderService,
+        UserService, StockSummaryService,
     ],
     exports: [
         AuthService, PassportModule,
         StockService, UserCapitalService, UserStockService, StockHistoryService,
         StockOrderService, UserStockOrderService,
-        CronService, UserService, StockSummaryService,
+        UserService, StockSummaryService,
     ],
 })
 export class ServiceModule { }
