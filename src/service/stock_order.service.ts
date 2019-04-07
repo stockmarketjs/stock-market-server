@@ -84,6 +84,7 @@ export class StockOrderService extends BaseService {
                 stockId,
                 date,
             },
+            attributes: ['minute', 'price'],
             order: [['createdAt', 'ASC']],
         });
         // 将所有数组, 分组成 分钟单位
@@ -127,11 +128,10 @@ export class StockOrderService extends BaseService {
             if (item) {
                 res.push(item);
             } else {
-                res.push(new StockOrder({
+                res.push(<StockOrder>{
                     minute,
-                    hand: 0,
                     price: $.tail(res) ? $.tail(res).price : stock.startPrice,
-                }));
+                });
             }
         }
 
