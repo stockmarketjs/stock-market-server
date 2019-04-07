@@ -39,31 +39,6 @@ export class UserStockOrderService extends BaseService {
         return this.userStockOrderDao.create(params, { transaction });
     }
 
-    public async findAllReadyByStockIdWithLock(
-        stockId: string,
-        transaction: Transaction,
-    ) {
-        const ssddsa = await this.userStockOrderDao.findAll({
-            where: {
-                stockId,
-                state: ConstData.ORDER_STATE.READY,
-            },
-            transaction,
-            attributes: ['id'],
-        });
-        return this.userStockOrderDao.findAll({
-            where: {
-                id: {
-                    [Op.in]: [
-                        _.map(ssddsa, 'id'),
-                    ],
-                },
-            },
-            transaction,
-            lock: Transaction.LOCK.UPDATE,
-        });
-    }
-
     public async findAllByUserId(
         userId: string,
         transaction?: Transaction,
@@ -87,38 +62,6 @@ export class UserStockOrderService extends BaseService {
             userStockOrder.setDataValue<any>('stock', stock);
             return userStockOrder;
         });
-    }
-
-    public async updateById(
-        id: string,
-        params: UserStockOrderUpdateBodyDto,
-        transaction?: Transaction,
-    ) {
-        return this.userStockOrderDao.update({
-            state: params.state,
-        }, {
-                where: {
-                    id,
-                },
-                transaction,
-            });
-    }
-
-    public async bulkUpdateByIds(
-        ids: string[],
-        params: UserStockOrderUpdateBodyDto,
-        transaction?: Transaction,
-    ) {
-        return this.userStockOrderDao.bulkUpdate({
-            state: params.state,
-        }, {
-                where: {
-                    id: {
-                        [Op.in]: ids,
-                    },
-                },
-                transaction,
-            });
     }
 
     public async cancelById(
@@ -187,50 +130,6 @@ export class UserStockOrderService extends BaseService {
                 value,
                 transaction,
             );
-        }
-    }
-
-    public async bulkCancel(
-        stockId: string,
-        transaction?: Transaction,
-    ) {
-        const newTransaction = !transaction;
-        transaction = transaction ? transaction : await this.sequelize.transaction();
-
-        try {
-            const userStockOrders = await this.userStockOrderDao.findAll({
-                where: {
-                    stockId,
-                    state: ConstData.ORDER_STATE.READY,
-                },
-                attributes: ['id'],
-                transaction,
-            });
-            await this.userStockOrderDao.bulkUpdate({
-                state: ConstData.ORDER_STATE.CANCEL,
-            }, {
-                    where: {
-                        id: {
-                            [Op.in]: userStockOrders.map(v => v.id),
-                        },
-                    },
-                    transaction,
-                });
-            for (const userStockOrder of userStockOrders) {
-                await this.cancelFrozen(
-                    userStockOrder,
-                    userStockOrder.userId,
-                    userStockOrder.hand * 100,
-                    userStockOrder.stockId,
-                    transaction,
-                );
-            }
-
-            newTransaction && await transaction.commit();
-            return true;
-        } catch (e) {
-            newTransaction && await transaction.rollback();
-            throw e;
         }
     }
 
