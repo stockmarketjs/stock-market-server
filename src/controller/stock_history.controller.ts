@@ -22,7 +22,8 @@ export class StockHistoryController {
     ) {
         return this.stockHistoryService.findAllByPeriod(
             stockId,
-            Moment().subtract(4, 'months').toISOString(),
+            Moment().subtract(4, 'months').format('YYYY-MM-DD'),
+            Moment().subtract(1,'days').format('YYYY-MM-DD'),
         );
     }
 

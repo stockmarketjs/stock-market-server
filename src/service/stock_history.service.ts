@@ -22,8 +22,8 @@ export class StockHistoryService extends BaseService {
         return this.stockHistoryDao.create(paarms, { transaction });
     }
 
-    public async findAllByPeriod(stockId: string, begin?: string, end?: string) {
-        return this.stockHistoryDao.findAll({
+    public async findAllByPeriod(stockId: string, begin: string, end: string) {
+        const stockHistories = await this.stockHistoryDao.findAll({
             where: {
                 stockId,
                 date: {
@@ -33,6 +33,50 @@ export class StockHistoryService extends BaseService {
             },
             order: [['date', 'ASC']],
         });
+
+        const dates: {
+            date: string,
+            startPrice: number | null,
+            endPrice: number | null,
+            lowestPrice: number | null,
+            highestPrice: number | null,
+        }[] = this.generateEmptyPeriod(begin, end).map(v => {
+            return {
+                date: v,
+                startPrice: null,
+                endPrice: null,
+                lowestPrice: null,
+                highestPrice: null,
+            };
+        });
+        const res = _.unionBy(stockHistories.map(v => {
+            return {
+                date: v.date,
+                startPrice: v.startPrice,
+                endPrice: v.endPrice,
+                lowestPrice: v.lowestPrice,
+                highestPrice: v.highestPrice,
+            };
+        }), dates, 'date');
+        return _.orderBy(res, ['date'], ['asc']);
+    }
+
+    private generateEmptyPeriod(begin: string, end: string) {
+        const res: string[] = [];
+        const beginObj = Moment(begin);
+        const endObj = Moment(end);
+
+        // 初始化, 先放第一个
+        const initDate = beginObj.format('YYYY-MM-DD');
+        res.push(initDate);
+
+        // 累加1
+        while (beginObj.unix() < endObj.unix()) {
+            beginObj.add(1, 'days');
+            res.push(beginObj.format('YYYY-MM-DD'));
+        }
+
+        return res.sort();
     }
 
 }

@@ -9,7 +9,7 @@ import { StockOrder } from '../entity/sequelize/stock_order.entity';
 import { $ } from '../common/util/function';
 import { UserStockOrderDao } from '../dao/user_stock_order.dao';
 import { ConstData } from '../constant/data.const';
-import { StockOrderFindAllBuyShift, StockOrderFindAllSoldShift } from '../vo/stock_order.vo';
+import { StockOrderFindAllBuyShift, StockOrderFindAllSoldShift, StockOrderFindAllVo } from '../vo/stock_order.vo';
 import { StockService } from './stock.service';
 
 @Injectable()
@@ -78,7 +78,7 @@ export class StockOrderService extends BaseService {
     public async findAllOfDate(
         stockId: string,
         date: string = Moment().format('YYYY-MM-DD'),
-    ) {
+    ): Promise<StockOrderFindAllVo> {
         const models = await this.stockOrderDao.findAll({
             where: {
                 stockId,
@@ -90,10 +90,10 @@ export class StockOrderService extends BaseService {
         // 将所有数组, 分组成 分钟单位
         const group = _.groupBy(models, 'minute');
         // 历史数据的每分钟, 以那一分钟最后一笔交易为准
-        const data: StockOrder[] = [];
+        const stockOrders: StockOrder[] = [];
         for (const minute in group) {
             const item = $.tail(group[minute]);
-            data.push(item);
+            stockOrders.push(item);
         }
 
         /**
@@ -102,40 +102,31 @@ export class StockOrderService extends BaseService {
         const periods = <{ begin: string, end: string }[]>ConstData.TRADE_PERIODS;
         // 格式化交易时间段
         const tradePeriods = _.map(periods, tradePeriod => {
-            // return {
-            //     begin: Moment(tradePeriod.begin, 'HH:mm').toISOString(),
-            //     end: Moment(tradePeriod.end, 'HH:mm').toISOString(),
-            // }
             const endMarket = Moment(tradePeriod.end, 'HH:mm');
-            if (Moment().format('HHmm') >= endMarket.format('HHmm')) {
-                return {
-                    begin: Moment(tradePeriod.begin, 'HH:mm').toISOString(),
-                    end: endMarket.seconds(0).milliseconds(0).toISOString(),
-                };
-            } else {
-                return {
-                    begin: Moment(tradePeriod.begin, 'HH:mm').toISOString(),
-                    end: Moment().toISOString(),
-                };
-            }
+            return {
+                begin: Moment(tradePeriod.begin, 'HH:mm').toISOString(),
+                end: endMarket.seconds(0).milliseconds(0).toISOString(),
+            };
         });
         const minutes = this.generateEmptyPeriods(tradePeriods);
 
         const stock = await this.stockService.findOneByIdOrThrow(stockId);
-        const res: StockOrder[] = [];
+        const data: StockOrderFindAllVo = {
+            startTime: ConstData.TRADE_PERIODS[0].begin,
+            endTime: ConstData.TRADE_PERIODS[1].end,
+            minutePrices: [],
+        };
         for (const minute of minutes) {
-            const item = _.find(data, { minute });
+            const item = _.find(stockOrders, { minute });
             if (item) {
-                res.push(item);
+                data.minutePrices.push([item.minute, item.price]);
             } else {
-                res.push(<StockOrder>{
-                    minute,
-                    price: $.tail(res) ? $.tail(res).price : stock.startPrice,
-                });
+                const price = $.tail(data.minutePrices) ? $.tail(data.minutePrices)[1] : stock.startPrice;
+                const price2 = Number(Moment().format('HHmm')) < Number(Moment(minute, 'HH:mm').format('HHmm')) ? null : price;
+                data.minutePrices.push([minute, price2]);
             }
         }
-
-        return res;
+        return data;
     }
 
     public generateEmptyPeriods(periods: { begin: string, end: string }[]) {
@@ -148,7 +139,7 @@ export class StockOrderService extends BaseService {
         return res;
     }
 
-    public generateEmptyPeriod(begin: string, end: string) {
+    private generateEmptyPeriod(begin: string, end: string) {
         const res: string[] = [];
         const beginObj = Moment(begin);
         const endObj = Moment(end);
