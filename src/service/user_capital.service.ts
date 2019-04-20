@@ -49,7 +49,7 @@ export class UserCapitalService extends BaseService {
         await this.validCreate(userId, transaction);
         return this.userCapitalDao.create({
             userId,
-            cash: 0,
+            cash: 10000,
         }, { transaction });
     }
 

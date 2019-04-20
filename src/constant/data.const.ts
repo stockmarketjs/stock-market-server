@@ -58,4 +58,7 @@ export namespace ConstData {
         FALSE = 0,
     }
 
+    // 涨跌幅% 限制, 10%
+    export const TRADE_CHANGE_PER_LIMIT = 10;
+
 }

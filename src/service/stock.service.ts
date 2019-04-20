@@ -157,6 +157,7 @@ export class StockService extends BaseService {
 
         try {
             this.validInTradeTime();
+            await this.validOverflowLimit(id, price, transaction);
             await this.validEnoughCapital(operatorId, price, hand, transaction);
 
             await this.userCapitalService.findOneByPkLock(
@@ -189,6 +190,7 @@ export class StockService extends BaseService {
 
         try {
             this.validInTradeTime();
+            await this.validOverflowLimit(id, price, transaction);
             await this.validEnoughStock(operatorId, id, hand, transaction);
 
             await this.userStockService.findOneByPkLock(
@@ -249,6 +251,19 @@ export class StockService extends BaseService {
         const userStock = await this.userStockService.findOneByUserIdStockIdOrThrow(userId, stockId, transaction);
         if (userStock.amount < hand * 100) {
             throw new BadRequestException('没有足够的股票');
+        }
+    }
+
+    public async validOverflowLimit(
+        stockId: string,
+        price: number,
+        transaction?: Transaction,
+    ) {
+        const stock = await this.findOneByIdOrThrow(stockId, transaction);
+        const min = Calc.mul(stock.startPrice, (100 - ConstData.TRADE_CHANGE_PER_LIMIT) / 100);
+        const max = Calc.mul(stock.startPrice, (ConstData.TRADE_CHANGE_PER_LIMIT + 100) / 100);
+        if (min > price || price > max) {
+            throw new BadRequestException(`不允许超过涨跌幅限制, 当前规则是 ${ConstData.TRADE_CHANGE_PER_LIMIT}%`);
         }
     }
 
