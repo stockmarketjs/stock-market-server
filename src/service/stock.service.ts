@@ -156,13 +156,14 @@ export class StockService extends BaseService {
         transaction = transaction ? transaction : await this.sequelize.transaction();
 
         try {
+            await this.userCapitalService.findOneByPkLock(
+                operatorId, transaction,
+            );
+
             this.validInTradeTime();
             await this.validOverflowLimit(id, price, transaction);
             await this.validEnoughCapital(operatorId, price, hand, transaction);
 
-            await this.userCapitalService.findOneByPkLock(
-                operatorId, transaction,
-            );
             const cost = Calc.calcStockBuyCost(hand, price);
             await this.userCapitalService.frozenUserCapitalWhenCost(
                 operatorId, cost, transaction,
@@ -189,13 +190,14 @@ export class StockService extends BaseService {
         transaction = transaction ? transaction : await this.sequelize.transaction();
 
         try {
+            await this.userStockService.findOneByPkLock(
+                operatorId, id, transaction,
+            );
+
             this.validInTradeTime();
             await this.validOverflowLimit(id, price, transaction);
             await this.validEnoughStock(operatorId, id, hand, transaction);
 
-            await this.userStockService.findOneByPkLock(
-                operatorId, id, transaction,
-            );
             await this.userStockService.frozenUserStockWhenCost(
                 operatorId, id, hand * 100, transaction,
             );
